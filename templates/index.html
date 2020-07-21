@@ -1,0 +1,35 @@
+{%extends 'base.html'%}
+
+{%block head%} 
+<title>Alexandria</title>
+{%endblock%}
+
+{%block body%} 
+<div class="content"> 
+        <h1> TASK MASTER </h1>
+        <table>
+                <tr>
+                        <th> TASK </th>
+                        <th> ADDED </th>
+                        <th> ACTIONS </th>
+                </tr>
+                {% for task in tasks %}
+                <tr>
+                        <td> {{task.content}} </td>
+                        <td> {{task.date_created.date()}} </td>
+                        <td> 
+                                <a href="/update/{{task.id}}"> Update </a>
+                                <br>
+                                <a href="/delete/{{task.id}}"> Delete </a>
+                        </td>
+                </tr>
+                {% endfor%}
+        </table>
+
+
+        <form action="/" method="POST">
+                <input type="text" name="content" id="content">
+                <input type="submit" name="Add Task">
+        </form>
+</div>
+{%endblock%}
