@@ -33,12 +33,29 @@ class TempBook:
         id = 0
         name = "The Conquest of Bread"
         summary = "TCOB is an 1892 book by the Russian Anarcho Communist Peter Kropotkin, Originally written in French...\n READ MORE >>"
-        coversrc = os.path.join(app.config['IMAGE_FOLDER'], 'TCOB.png')
+        coversrc = os.path.join(app.config['IMAGE_FOLDER'], name + '.png')
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/information', methods=['POST', 'GET'])
 def index():
-                book = TempBook();
-                return render_template("information.html", book=book)
+        book = TempBook();
+        return render_template("information.html", book=book)
+
+
+@app.route('/register')
+def about():
+    return render_template('register.html')
+
+@app.route('/home')
+def home():
+    return render_template('home.html')
+
+@app.route('/login')
+def login():
+    return render_template("to.html")
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
 
 if __name__ == "__main__":
         app.run(debug=True)
