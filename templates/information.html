@@ -1,0 +1,17 @@
+{%extends 'base.html'%}
+
+{%block head%} 
+<title>Alexandria</title>
+{%endblock%}
+
+{%block body%}
+<p>
+{{book.summary}}
+</p>
+
+
+<h1>
+{{book.name}}
+</h1>
+<img src="{{book.coversrc}}" width=25% height=25%>
+{%endblock%}
