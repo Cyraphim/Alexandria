@@ -2,57 +2,43 @@ from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+import os
+
 app = Flask(__name__)
+
+IMAGE_FOLDER = os.path.join('static', 'images')
+app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
 
-class ToDo(db.Model):
+class Book(db.Model):
         id = db.Column(db.Integer, primary_key=True)
-        content = db.Column(db.String(200), nullable=False)
-        date_created = db.Column(db.DateTime, default=datetime.utcnow)
+        name = db.Column(db.String(200), nullable=False)
+        summary = db.Column(db.String(256), nullable=True)
+        coversrc = db.Column(db.String(256))
 
         def __repr__(self):
                 return '<Task %r>' % self.id
 
+class Author(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        name = db.Column(db.String(200), nullable=False)
+        summary = db.Column(db.String(256), nullable=True)
+        coversrc = db.Column(db.String(256))
+
+        def __repr__(self):
+                return '<Task %r>' % self.id
+
+class TempBook:
+        id = 0
+        name = "The Conquest of Bread"
+        summary = "TCOB is an 1892 book by the Russian Anarcho Communist Peter Kropotkin, Originally written in French...\n READ MORE >>"
+        coversrc = os.path.join(app.config['IMAGE_FOLDER'], 'TCOB.png')
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
-        if request.method == 'POST':
-                task_content = request.form['content']
-                new_task = ToDo(content=task_content)
-
-                try:
-                        db.session.add(new_task)
-                        db.session.commit()
-                        return redirect('/')
-                except:
-                        return "THERE WAS AN ISSUE ADDING YOUR TASK"
-        else:
-                tasks = ToDo.query.order_by(ToDo.date_created).all()
-                return render_template("index.html", tasks=tasks)
-
-@app.route('/delete/<int:id>')
-def delete(id):
-        new_task = ToDo.query.get_or_404(id)
-        try:
-                db.session.delete(new_task)
-                db.session.commit()
-                return redirect('/')
-        except:
-                return "THERE WAS AN ISSUE DELETING YOUR TASK"
-
-@app.route('/update/<int:id>', methods=['GET', 'POST'])
-def update(id):
-        task = ToDo.query.get_or_404(id)
-        if request.method == 'POST':
-                task.content = request.form['content']
-                try:
-                        db.session.commit()
-                        return redirect('/')
-                except:
-                        return "THERE WAS AN ISSUE UPDATING YOUR TASK"
-        else:
-                return render_template('update.html', task=task)
-
+                book = TempBook();
+                return render_template("information.html", book=book)
 
 if __name__ == "__main__":
         app.run(debug=True)

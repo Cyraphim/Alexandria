@@ -1,9 +1,43 @@
 <html>
         <head>
                 <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}">
-               {%block head%} {%endblock%}
+               {%block head%} 
+               {%endblock%}
         </head>
         <body>
-                {%block body%} {%endblock%}
+                <div class="menu-bar">
+                        <ul>
+                                <li class="active"><a href="#">Home</a></li>
+                                <li><a href="#">About</a>
+                        <div class= "sub-menu-1">
+                                                <ul>
+                                                        <li> <a href="#">Language</a></li>
+                                                        <li> <a href="#">Pricing</a></li>
+                                                        <li> <a href="#">Authors life</a></li>
+                                                        <li> <a href="#">Rating</a></li>
+                                                </ul>
+                        </div>
+                        </li>
+                        <li><a href="#">Contact</a>
+                        
+                        <div class= "sub-menu-1">
+                                <ul>
+                                        <li> <a href="#">E-mail</a></li>
+                                        <li> <a href="#">Phone Number</a></li>
+                                </ul>
+                        </div>
+                        </li>
+                        <li><a href="#">Genres</a>
+                                <div class= "sub-menu-1">
+                        <ul>
+                                <li> <a href="#">Light reading</a></li>
+                                <li> <a href="#">Educational</a></li>
+                        </ul>
+                        </div>
+                        </li>
+                        </ul>
+                </div>
+                {%block body%} 
+                {%endblock%}
         </body>
 </html>        
