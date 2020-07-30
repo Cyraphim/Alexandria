@@ -1,105 +1,153 @@
-*
-{
-padding: 0;
-margin: 0;
-box-sizing: border-box;
-}
-body
-{
-background-color: #FFC0CB;
-font-family: sans-serif;
-}
-.menu-bar
-{ 
-background: #191970;
-text-align: center;
-}
-.menu-bar ul
-{
-display: inline-flex;
-list-style: none;
-color: #fff;
-}
-.menu-bar ul li
-{
-width: 120px;
-margin: 15px;
-padding: 15px;
-}
-.menu-bar ul li a
-{
-text-decoration: none;
-color: white;
-}
-.active, .menu-bar ul li:hover
-{
-background: #B0E0E6;
-border-radius: 3px;
-}
-.sub-menu-1
-{
-display: none;
-}
-.menu-bar ul li:hover .sub-menu-1
-{
-display: block;
-position: absolute;
-background: #191970;
-margin-top: 15px;
-margin-left: -15px;
-}
-.menu-bar ul li:hover .sub-menu-1 ul
-{
-display: block;
-margin: 10px;
-}
-.menu-bar ul li:hover .sub-menu-1 ul li
-{
-width: 150px;
-padding: 10px;
-border-bottom: 1px dotted #fff;
-background: transparent;
-border-radius: 0;
-text-align: left;
-}
-.menu-bar ul li:hover .sub-menu-1 ul li:last-child
-
-{
-border-bottom: none;
-}
-.menu-bar ul li:hover .sub-menu-1 ul li a:hover
-{
-color: #FFC0CB;
+:root {
+    --primary-color: #262626;
+    --accent-color: hotpink;
 }
 
-p
-{
-position: absolute;
-width:500px;
-height: 250px;
-left: 750px;
-top: 250px;
-background: #FFFFFF;
+body {
+    background-image: linear-gradient(to bottom right, #07598f, var(--accent-color));
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
 }
-h1
-{
-position: absolute;
-width: 500px;
-height: 250px;
-left: 750px;
-top: 550px;
-background: #FFFFFF;
+
+header a {
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    margin-top: 40px;
 }
-.bg-nav
-{
-        background: #780206;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #061161, #780206);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #061161, #780206); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    
-    
-    }
-    
-    .mt-100
-    {
-        margin-top: 100px;
-    }
+
+section {
+    background: var(--primary-color);
+    border: 1px solid var(--accent-color);
+    margin: 20px 20px 20px 20px;
+    border-radius: 10px;
+    padding: 0px 20px 0px 20px;
+    max-width: 900px;
+}
+
+.features {
+    color: var(--accent-color);
+    display: flex;
+    flex-direction: row;
+}
+
+.features figure {
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    width: 200px;
+    padding: 20px;
+}
+
+.features figure img {
+    border-radius: 10px;
+    border: 1px solid white;
+    box-shadow: gray 0 0 10px;
+    width: 200px;
+    height: 300px;
+    margin-bottom: 10px;
+    object-fit: cover;
+}
+
+nav ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+nav li {
+    display: inline-block;
+    margin-right: 20px;
+    color: wheat;
+}
+
+.details {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+footer {
+    background: var(--primary-color);
+    color: beige;
+    font-size: 12px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+.menu-bar {
+    background: var(--primary-color);
+    text-align: center;
+    align-self: right;
+    display: flex;
+    -ms-flex-align: right;
+}
+
+.menu-bar ul {
+    display: inline-flex;
+    list-style: none;
+    color: #fff;
+}
+
+.menu-bar ul li {
+    width: 100%;
+    margin: 10px;
+    padding: 15px;
+}
+
+.menu-bar ul li a {
+    text-decoration: none;
+    color: white;
+}
+
+.active,
+.menu-bar ul li {
+    background: var(--accent-color);
+    border-radius: 10px;
+}
+
+.sub-menu-1 {
+    display: none;
+}
+
+.menu-bar ul li:hover .sub-menu-1 {
+    display: block;
+    position: absolute;
+    background: var(--accent-color);
+    border-radius: 10px;
+    margin-top: 25px;
+    margin-left: -15px;
+}
+
+.menu-bar ul li:hover .sub-menu-1 ul {
+    display: block;
+    margin: 10px;
+}
+
+.menu-bar ul li:hover .sub-menu-1 ul li {
+    width: 150px;
+    padding: 10px;
+    border-bottom: 1px dotted #fff;
+    background: transparent;
+    border-radius: 0;
+    text-align: left;
+}
+
+.menu-bar ul li:hover .sub-menu-1 ul li:last-child {
+    border-bottom: none;
+}
+
+.menu-bar ul li:hover .sub-menu-1 ul li a:hover {
+    color: #FFC0CB;
+}
+
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+h1 {
+    color: var(--accent-color);
+}

@@ -20,25 +20,37 @@ class Book(db.Model):
         def __repr__(self):
                 return '<Task %r>' % self.id
 
-class Author(db.Model):
-        id = db.Column(db.Integer, primary_key=True)
-        name = db.Column(db.String(200), nullable=False)
-        summary = db.Column(db.String(256), nullable=True)
-        coversrc = db.Column(db.String(256))
+class Author():
+        name = "Peter Kropotkin"
 
-        def __repr__(self):
-                return '<Task %r>' % self.id
-
-class TempBook:
-        id = 0
-        name = "The Conquest of Bread"
-        summary = "TCOB is an 1892 book by the Russian Anarcho Communist Peter Kropotkin, Originally written in French...\n READ MORE >>"
+class TB2:
+        id = 1
+        name = "Das Kapital"
+        summary = "Das Kapital, also called Capital. A Critique of Political Economy, is a foundational theoretical text in materialist philosophy, economics and politics by Karl Marx."
         coversrc = os.path.join(app.config['IMAGE_FOLDER'], name + '.png')
+
+class TB3:
+        id = 3
+        name = "Antifa The Antifascist Handbook"
+        summary = "Antifa: The Anti-Fascist Handbook is a 2017 book by historian Mark Bray, which explores the history of anti-fascist movements since the 1920s and 1930s and their contemporary resurgence."
+        coversrc = os.path.join(app.config['IMAGE_FOLDER'], name + '.png')
+
+class TB1:
+        id = 0
+        likes = "100%"
+        name = "The Conquest of Bread"
+        summary = "The Conquest of Bread is an 1892 book by the Russian anarcho-communist Peter Kropotkin. Originally written in French, it first appeared as a series of articles in the anarchist journal Le Révolté. It was first published in Paris with a preface by Élisée Reclus, who also suggested the title."
+        coversrc = os.path.join(app.config['IMAGE_FOLDER'], name + '.png')
+        trivia=["I am a human", "Shahi paneer is tasty", "water is wet", "oh wait I was supposed to write about the book", "oh shit oh fu-"]
+        author=[Author()]
+        date=datetime.now().date()
+        related = [TB2(), TB3()]
+
 
 @app.route('/information', methods=['POST', 'GET'])
 def index():
-        book = TempBook();
-        return render_template("information.html", book=book)
+        book = TB1()
+        return render_template("information.html", listing=book)
 
 
 @app.route('/register')
