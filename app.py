@@ -10,6 +10,13 @@ IMAGE_FOLDER = os.path.join('static', 'images')
 app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
+#db.create_all()
+
+class reg(db.Model):
+    email = db.Column(db.String(200), primary_key=True)
+    username = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+
 
 class Book(db.Model):
         id = db.Column(db.Integer, primary_key=True)
@@ -47,27 +54,58 @@ class TB1:
         related = [TB2(), TB3()]
 
 
+
+
 @app.route('/information', methods=['POST', 'GET'])
 def index():
         book = TB1()
         return render_template("information.html", listing=book)
 
 
-@app.route('/register')
+@app.route('/register',methods=['POST', 'GET'])
 def about():
-    return render_template('register.html')
+        if request.method == 'POST':
+
+                username = request.form['username']
+                email = request.form['email']
+                password = request.form['password']
+                new_username = reg(username=username,email=email,password=password)
+                
+                try:
+                        db.session.add(new_username)
+                        
+                        db.session.commit()
+                        return redirect('/login')
+                except:
+                        return 'There was an issue adding your task'
+
+        else:
+                new_username = reg.query.order_by(reg.username).first();   
+                #new_username = 0
+                return render_template('register.html',new_username=new_username)
+        
 
 @app.route('/home')
 def home():
     return render_template('home.html')
 
-@app.route('/login')
+
+@app.route('/login',methods=['POST', 'GET'])
 def login():
-    return render_template("login.html")
+        if request.method == 'POST':
+                new_username = request.form['username']
+                new_password = request.form['password']
+                
+                user = bool(reg.query.filter_by(username=new_username,password=new_password).first())
+                if user == True:
+                        return redirect('/information')
+                else:
+                        return "user id and password is incorrect"
+        else:
+                return render_template("login.html")
+        
 
 if __name__ == "__main__":
-    app.run(debug=True)
-
-
-if __name__ == "__main__":
+        db.create_all()
         app.run(debug=True)
+        
