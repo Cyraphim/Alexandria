@@ -5,10 +5,11 @@
 :root {
     --primary-color: #262626;
     --accent-color: hotpink;
+    --gradient-other: #00dbde;
 }
 
 body {
-    background-image: linear-gradient(to bottom right, #07598f, var(--accent-color));
+    background-image: linear-gradient(to bottom right, var(--gradient-other), var(--accent-color));
     color: white;
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;

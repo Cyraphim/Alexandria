@@ -1,15 +1,9 @@
 {%extends 'base.html'%} {%block head%}
 <title>Alexandria</title>
 {%endblock%} {%block body%}
-<br>
-<br>
-<br>
-<br>
-<br>
 
 <div style="margin:20px auto; max-width: 1000px;">
-    
-            
+
     <section>
         <table style="width:100%; padding: 20px;">
             <tr>
@@ -18,31 +12,33 @@
                 </td>
 
                 <td rowspan="10" valign="bottom">
-                    <img src="{{listing.coversrc}}" alt="{{listing.alttext}}" style="object-fit: cover;width:250px; height: 375px;">
+                    <img src="{{ url_for( 'static', filename='images/' + listing.name + '.png' ) }}" alt="{{listing.alttext}} " style="object-fit: cover;width:250px; height: 375px; ">
                 </td>
             </tr>
             <tr>
-                <td valign="top" style="padding-right:50px" align="justify">
+                <td valign="top " style="padding-right:50px " align="justify ">
                     <p>
                         Rating: {{listing.likes}}
                     </p>
                 </td>
             </tr>
             <tr>
-                <td valign="top" style="padding-right:50px" align="justify">
+                <td valign="top " style="padding-right:50px " align="justify ">
                     <p>
-                        Author: {% if listing.author|length%} {%for a in listing.author %} [ {{a.name}} ] {%endfor%} {%else%}
-                        <i>UNKNOWN</i> {%endif%}
+                        Author: {% if listing.author|length%} {%for a in listing.get_author() %}
+                        <a href="/information/{{a.id}}"> 
+                            [{{a.name}}] 
+                        </a> {%endfor%} {%else%} <i>UNKNOWN</i> {%endif%}
                     </p>
                 </td>
             </tr>
             <tr>
-                <td valign="top" style="padding-right:50px" align="justify">
+                <td valign="top " style="padding-right:50px " align="justify ">
                     <p>Date Published: {{listing.date}} </p>
                 </td>
             </tr>
             <tr>
-                <td valign="top" style="padding-right:50px" align="justify">
+                <td valign="top " style="padding-right:50px " align="justify ">
                     <p>{{listing.summary}} </p>
                 </td>
             </tr>
@@ -50,7 +46,7 @@
     </section>
 
     {% if listing.trivia is defined %}
-    <section class="details">
+    <section class="details ">
         <h1>TRIVIA</h1>
         <ul>
             {% for t in listing.trivia %}
@@ -64,10 +60,10 @@
     {%endif%} {% if listing.related is defined %}
     <section>
         <h1>RELATED</h1>
-        <div class="features">
+        <div class="features ">
             {% for b in listing.related %}
             <figure>
-                <img src="{{b.coversrc}}" alt="{{b.alttext}}">
+                <img src="{{b.coversrc}} " alt="{{b.alttext}} ">
                 <figcaption>{{b.name}}</figcaption>
             </figure>
             {% endfor %}
