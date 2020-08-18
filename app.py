@@ -36,7 +36,19 @@ class Listing(db.Model):
         is_author = db.Column(db.Integer, nullable = False)
 
         def get_author(self):
+                self.author = self.author.strip()
                 int_list = self.author.split(' ')
+                toCheck = []
+                for i in range(len(int_list)):
+                        toCheck.append(convert_to_int(int_list[i]))
+                toRet=[]
+                for i in toCheck:
+                        toRet.append(Listing.query.get(i))
+                return toRet
+
+        def get_related(self):
+                self.related = self.related.strip()
+                int_list = self.related.split(' ')
                 toCheck = []
                 for i in range(len(int_list)):
                         toCheck.append(convert_to_int(int_list[i]))
@@ -77,10 +89,15 @@ def about():
 
 @app.route('/home')
 def home():
-        book = Listing(id=0, name="The Conquest of Bread",summary="Fluffy boi", author="1", likes=1, date_published=datetime.now().date(),related="", tags="", is_author=False)
+        book = Listing(id=0, name="The Conquest of Bread",summary="Fluffy boi", author="1", likes=1, date_published=datetime.now().date(),related="2 3", tags="", is_author=False)
+        book1 = Listing(id=2, name="Antifa The Antifascist Handbook",summary="How to get access to George Soros' bank account", author="1", likes=1, date_published=datetime.now().date(),related="1 2", tags="", is_author=False)
+        book2 = Listing(id=3, name="Das Kapital",summary="The more lesbians in a videogame the more Marxist it is", author="1", likes=1, date_published=datetime.now().date(),related="0 1 2 3", tags="", is_author=False)
         kropotkin = Listing(id=1, name="Peter Kropotkin",summary="Leftist Santa", author="0 ", likes=69, date_published=datetime.now().date(),related="", tags="", is_author=True)
         
         try:
+                db.session.add(book)
+                db.session.add(book1)
+                db.session.add(book2)
                 db.session.add(kropotkin)
                 db.session.commit()
                 return redirect("information/0")

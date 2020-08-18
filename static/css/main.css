@@ -26,22 +26,20 @@ section {
     background: var(--primary-color);
     border: 1px solid var(--accent-color);
     margin: 20px 20px 20px 20px;
-    border-radius: 10px;
+    border-radius: 50px;
     padding: 0px 20px 0px 20px;
     max-width: 900px;
 }
 
 .features {
     color: var(--accent-color);
-    display: flex;
-    flex-direction: row;
 }
 
 .features figure {
     text-align: center;
     text-transform: uppercase;
     font-weight: bold;
-    width: 200px;
+    width: 150px;
     padding: 20px;
 }
 
@@ -51,7 +49,6 @@ section {
     box-shadow: gray 0 0 10px;
     width: 200px;
     height: 300px;
-    margin-bottom: 10px;
     object-fit: cover;
 }
 
@@ -87,6 +84,7 @@ footer {
     align-self: right;
     display: flex;
     -ms-flex-align: right;
+    z-index: 10;
 }
 
 .menu-bar ul {
@@ -150,6 +148,7 @@ footer {
 .sticky {
     position: fixed;
     top: 0;
+    z-index: 10;
     width: 100%;
 }
 
@@ -199,4 +198,12 @@ a {
     width: 100%;
     font-size: 18px;
     margin-bottom: 50px;
+}
+
+.flickity-page-dots.dot {
+    @media only screen and(max-width: 991px) {
+        .cell {
+            width: 50%
+        }
+    }
 }

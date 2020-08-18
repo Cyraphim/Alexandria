@@ -56,18 +56,31 @@
             {% endfor %}
         </ul>
     </section>
-
-    {%endif%} {% if listing.related is defined %}
+    {%endif%} {% if listing.related|length%}
     <section>
         <h1>RELATED</h1>
-        <div class="features ">
-            {% for b in listing.related %}
-            <figure>
-                <img src="{{b.coversrc}} " alt="{{b.alttext}} ">
-                <figcaption>{{b.name}}</figcaption>
-            </figure>
+        <div class="main-carousel"> {%for b in listing.get_related() %}
+            <div class="features">
+                <figure>
+                    <a href="/information/{{b.id}}">
+                        <img src="{{ url_for( 'static', filename='images/' + b.name + '.png' ) }} " alt="{{b.alttext}} ">
+                        <figcaption>{{b.name}}</figcaption>
+                    </a>
+                </figure>
+            </div>
             {% endfor %}
         </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js">
+        </script>
+        <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js">
+        </script>
+        <script>
+            $(".main-carousel").flickity({
+                cellAlign: 'left',
+                wrapAround: true,
+                freeScroll: true,
+            });
+        </script>
     </section>
     {%endif%}
 </div>
