@@ -85,6 +85,23 @@
     {%endif%}
 </div>
 
+<section class="container">
+    
+    Comment : {% if listing.comment|length%}
+    <h2>Leave Us a Comment</h2>
+    <form>
+        <textarea placeholder='Add Your Comment'></textarea>
+        <div class="btn">
+            <input type="submit" value='Comment'>
+            <button id='clear'>Cancel</button>
+        </div>
+    </form>  
+    {%for c in listing.get_author() %}
+     {{c.comment}}
+    {%endif%} {%endfor%}
+</section>
+
+<script src='plugin.js'></script>
 <footer>
     <h2 size=40px>
         &#169; READER'S CONCLAVE - 2020

@@ -23,7 +23,10 @@ def convert_to_int(value):
                 return int(value)
         except:
                 return -1
-
+class Comment(db.Model):
+        id = db.Column(db.Integer,primary_key=True)
+        username = db.Column(db.String(100),nullable= False)
+        comment = db.Column(db.String(200),nullable=False)
 class Listing(db.Model):
         id = db.Column(db.Integer, primary_key=True)
         name = db.Column(db.String(200), nullable=False)
@@ -34,7 +37,18 @@ class Listing(db.Model):
         related = db.Column(db.String(256), nullable=True)
         tags = db.Column(db.String(512), nullable=True)
         is_author = db.Column(db.Integer, nullable = False)
+        
+        comment = db.Column(db.String(200), nullable=True)
 
+        def get_comment(self):
+                #self.comment = self.comment.strip()
+                str_list = self.comment.split('')
+                toRutu = []
+                for i in str_list:
+                        toRutu.append(Comment.query.get(i))
+                return toRutu
+
+        
         def get_author(self):
                 self.author = self.author.strip()
                 int_list = self.author.split(' ')
@@ -64,6 +78,7 @@ class Listing(db.Model):
 @app.route('/information/<int:id>', methods=['POST', 'GET'])
 def index(id):
         l = Listing.query.get(id)
+        
         return render_template("information.html", listing=l)
 
 
