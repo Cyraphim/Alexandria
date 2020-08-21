@@ -27,6 +27,7 @@ class Comment(db.Model):
         id = db.Column(db.Integer,primary_key=True)
         username = db.Column(db.String(100),nullable= False)
         comment = db.Column(db.String(200),nullable=False)
+
 class Listing(db.Model):
         id = db.Column(db.Integer, primary_key=True)
         name = db.Column(db.String(200), nullable=False)
@@ -42,7 +43,7 @@ class Listing(db.Model):
 
         def get_comment(self):
                 #self.comment = self.comment.strip()
-                str_list = self.comment.split('')
+                str_list = self.comment.split(' ')
                 toRutu = []
                 for i in str_list:
                         toRutu.append(Comment.query.get(i))
@@ -104,16 +105,19 @@ def about():
 
 @app.route('/home')
 def home():
-        book = Listing(id=0, name="The Conquest of Bread",summary="Fluffy boi", author="1", likes=1, date_published=datetime.now().date(),related="2 3", tags="", is_author=False)
-        book1 = Listing(id=2, name="Antifa The Antifascist Handbook",summary="How to get access to George Soros' bank account", author="1", likes=1, date_published=datetime.now().date(),related="1 2", tags="", is_author=False)
-        book2 = Listing(id=3, name="Das Kapital",summary="The more lesbians in a videogame the more Marxist it is", author="1", likes=1, date_published=datetime.now().date(),related="0 1 2 3", tags="", is_author=False)
-        kropotkin = Listing(id=1, name="Peter Kropotkin",summary="Leftist Santa", author="0 ", likes=69, date_published=datetime.now().date(),related="", tags="", is_author=True)
+        book = Listing(id=0, name="The Conquest of Bread",summary="Fluffy boi", author="1", likes=1, date_published=datetime.now().date(),related="2 3", tags="", is_author=False, comment="1")
+        book1 = Listing(id=2, name="Antifa The Antifascist Handbook",summary="How to get access to George Soros' bank account", author="1", likes=1, date_published=datetime.now().date(),related="1 2", tags="", is_author=False,comment="1")
+        book2 = Listing(id=3, name="Das Kapital",summary="The more lesbians in a videogame the more Marxist it is", author="1", likes=1, date_published=datetime.now().date(),related="0 1 2 3", tags="", is_author=False,comment="1")
+        kropotkin = Listing(id=1, name="Peter Kropotkin",summary="Leftist Santa", author="0 ", likes=69, date_published=datetime.now().date(),related="", tags="", is_author=True,comment="")
         
+        comm = Comment(id = 1, username="DaSerialGenius", comment="giggity")
+
         try:
                 db.session.add(book)
                 db.session.add(book1)
                 db.session.add(book2)
                 db.session.add(kropotkin)
+                db.session.add(comm)
                 db.session.commit()
                 return redirect("information/0")
         except:
