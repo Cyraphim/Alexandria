@@ -10,7 +10,7 @@ IMAGE_FOLDER = os.path.join('static', 'images')
 app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
-#db.create_all()
+#db.create_all() 
 
 class reg(db.Model):
     email = db.Column(db.String(200), primary_key=True)
