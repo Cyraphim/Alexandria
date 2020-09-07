@@ -18,8 +18,6 @@ db = SQLAlchemy(app)
 
 
 class reg(db.Model):
-    _tablename_ = 'Reg'
-
     email = db.Column(db.String(200),nullable=False)
     username = db.Column(db.String(100), unique=True,primary_key=True)
     password = db.Column(db.String(100), nullable=False)
@@ -42,7 +40,7 @@ class Comment(db.Model):
     comment = db.Column(db.String(200), nullable=False)
     #regs = relationship("reg", back_populates="comments")
     regs = relationship("reg", foreign_keys="Comment.username")
-    db.Lists = db.Column(db.Integer,ForeignKey("Listing.id"))
+    db.listing = db.Column(db.Integer,ForeignKey("Listing.id"))
     db.listt = db.relationship("Listing", foreign_keys="Listing.id")
 
 
@@ -91,7 +89,7 @@ class Listing(db.Model):
 @app.route('/information/<int:id>', methods=['POST', 'GET'])
 def index(id):
     l = Listing.query.get(id)
-
+    c = Comment.query.get(id)
     return render_template("information.html", listing=l)
 
 
@@ -126,7 +124,7 @@ def home():
     kropotkin = Listing(id=1, name="Peter Kropotkin", summary="Leftist Santa", author="0 ", likes=69,
                         date_published=datetime.now().date(), related="", tags="", is_author=True, comment="")
 
-    comm = Comment(id=1, username="Abhinav", comment="giggity")
+    comm = Comment(id=0, username="Abhinav", comment="giggity")
 
     try:
         db.session.add(book)

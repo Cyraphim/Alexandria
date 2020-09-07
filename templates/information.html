@@ -3,49 +3,27 @@
 {%endblock%} {%block body%}
 
 <div style="margin:20px auto; max-width: 1000px;">
-
     <section>
-        <table style="width:100%; padding: 20px;">
-            <tr>
-                <td style="font-size:40px; padding:-10px;border-collapse: collapse;">
-                    <h1> {{listing.name}} </h1>
-                </td>
+        <div class="bookimage">
+            <img src=" {{ url_for( 'static', filename='images/' + listing.name + '.png' ) }} " alt="{{listing.alttext}} " style="object-fit: cover;width:250px; height: 375px; ">
+        </div>
 
-                <td rowspan="10" valign="bottom">
-                    <img src="{{ url_for( 'static', filename='images/' + listing.name + '.png' ) }}" alt="{{listing.alttext}} " style="object-fit: cover;width:250px; height: 375px; ">
-                </td>
-            </tr>
-            <tr>
-                <td valign="top " style="padding-right:50px " align="justify ">
-                    <p>
-                        Rating: {{listing.likes}}
-                    </p>
-                </td>
-            </tr>
-            <tr>
-                <td valign="top " style="padding-right:50px " align="justify ">
-                    <p>
-                        Author: {% if listing.author|length%} {%for a in listing.get_author() %}
-                        <a href="/information/{{a.id}}"> 
+        <h1> {{listing.name}} </h1>
+        <p>
+            Rating: {{listing.likes}}
+        </p>
+        <p>
+            Author: {% if listing.author|length%} {%for a in listing.get_author() %}
+            <a href="/information/{{a.id}} "> 
                             [{{a.name}}] 
                         </a> {%endfor%} {%else%} <i>UNKNOWN</i> {%endif%}
-                    </p>
-                </td>
-            </tr>
-            <tr>
-                <td valign="top " style="padding-right:50px " align="justify ">
-                    <p>Date Published: {{listing.date}} </p>
-                </td>
-            </tr>
-            <tr>
-                <td valign="top " style="padding-right:50px " align="justify ">
-                    <p>{{listing.summary}} </p>
-                </td>
-            </tr>
-        </table>
+        </p>
+        <p>Date Published: {{listing.date}} </p>
+        <p>{{listing.summary}} </p>
     </section>
 
     {% if listing.trivia is defined %}
+
     <section class="details ">
         <h1>TRIVIA</h1>
         <ul>
@@ -56,47 +34,53 @@
             {% endfor %}
         </ul>
     </section>
+
     {%endif%} {% if listing.related|length%}
     <section>
         <h1>RELATED</h1>
-        <div class="main-carousel"> {%for b in listing.get_related() %}
-            <div class="features">
+        <div class="main-carousel "> {%for b in listing.get_related() %}
+            <div class="features ">
                 <figure>
-                    <a href="/information/{{b.id}}">
+                    <a href="/information/{{b.id}} ">
                         <img src="{{ url_for( 'static', filename='images/' + b.name + '.png' ) }} " alt="{{b.alttext}} ">
-                        <figcaption>{{b.name}}</figcaption>
                     </a>
                 </figure>
             </div>
             {% endfor %}
         </div>
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js">
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js ">
         </script>
-        <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js">
+        <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js ">
         </script>
         <script>
-            $(".main-carousel").flickity({
-                cellAlign: 'left',
-                wrapAround: true,
-                freeScroll: true,
+            $(".main-carousel ").flickity({
+                pageDots: false
             });
         </script>
     </section>
-    {%endif%} {% if listing.comment|length%}
-    <section>
-
-        Comment :
-        <h2>Leave Us a Comment</h2>
-        <form>
-            <textarea placeholder='Add Your Comment'></textarea>
-            <div class="btn">
-                <input type="submit" value='Comment'>
-                <button id='clear'>Cancel</button>
-            </div>
-        </form>
-        {%for c in listing.get_comment() %} {{c.username}} says : {{c.comment}} {%endfor%}
-    </section>
     {%endif%}
+    <section>
+        <h1>Write a review!</h1>
+        <div class="comment-input">
+            <form>
+                <img src="{{ url_for( 'static', filename='images/The Conquest of Bread.png' ) }} ">
+                <textarea placeholder='Write a Review!'></textarea>
+                <button> SUBMIT </button>
+            </form>
+        </div>
+        <hr>
+        <div class="card ">
+            <img src="{{ url_for( 'static', filename='images/The Conquest of Bread.png' ) }} ">
+            <h1>DaSerialGenius</h1>
+            <comment> This book is good, I promise, please buy it, JK Rowling is not a transphobe I promise she didnt pay me!</comment>
+        </div>
+
+        <div class="card ">
+            <img src="{{ url_for( 'static', filename='images/The Conquest of Bread.png' ) }} ">
+            <h1>DaSerialGenius</h1>
+            <comment> This book is good, I promise, please buy it, JK Rowling is not a transphobe I promise she didnt pay me!</comment>
+        </div>
+    </section>
 </div>
 
 

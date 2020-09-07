@@ -11,7 +11,7 @@
 body {
     background-image: linear-gradient(to bottom right, var(--gradient-other), var(--accent-color));
     color: white;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Bahnschrift;
     margin: 0;
 }
 
@@ -19,16 +19,20 @@ header a {
     color: white;
     text-decoration: none;
     text-transform: uppercase;
-    margin-top: 40px;
 }
 
 section {
     background: var(--primary-color);
     border: 1px solid var(--accent-color);
-    margin: 20px 20px 20px 20px;
+    margin: 5px;
     border-radius: 10px;
-    padding: 0px 20px 0px 20px;
+    padding: 20px;
     max-width: 900px;
+    min-height: 375px;
+}
+
+section .bookimage {
+    float: right;
 }
 
 .features {
@@ -40,7 +44,6 @@ section {
     text-transform: uppercase;
     font-weight: bold;
     width: 150px;
-    padding: 20px;
 }
 
 .features figure img {
@@ -189,21 +192,95 @@ a {
     border: 2px solid var(--accent-color);
 }
 
-.btn {
-    background: var(--accent-color);
-    color: #fff;
-    padding: 15px;
-    border: none;
-    cursor: pointer;
+comment-input form {
     width: 100%;
-    font-size: 18px;
-    margin-bottom: 50px;
+    height: 150px;
 }
 
-.flickity-page-dots.dot {
-    @media only screen and(max-width: 991px) {
-        .cell {
-            width: 50%
-        }
-    }
+textarea {
+    float: right;
+    width: 90%;
+    height: 125px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    resize: none;
+    background: var(--primary-color);
+    color: white;
+}
+
+form button {
+    margin: 10px 0px;
+    padding: 10px;
+    background-color: var(--accent-color);
+    border-radius: 10px;
+    cursor: pointer;
+    color: #ffffff;
+}
+
+form button:hover {
+    background-color: #c796f2;
+}
+
+form button:active {
+    position: relative;
+    top: 1px;
+}
+
+form img {
+    float: left;
+    margin: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    object-fit: cover;
+}
+
+.card {
+    background: var(--primary-color);
+    border: 1px solid var(--accent-color);
+    margin: 20px 20px 20px 20px;
+    border-radius: 10px;
+    padding: 0px 20px 0px 20px;
+    max-width: 900px;
+    min-height: 100px;
+}
+
+.card img {
+    float: left;
+    margin: 10px;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 100%;
+}
+
+
+/* no circle */
+
+.flickity-button {
+    background: transparent;
+}
+
+
+/* big previous & next buttons */
+
+.flickity-prev-next-button {
+    width: 100px;
+    height: 100px;
+}
+
+
+/* icon color */
+
+.flickity-button-icon {
+    fill: white;
+}
+
+
+/* hide disabled button */
+
+.flickity-button:disabled {
+    display: none;
 }
