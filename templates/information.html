@@ -10,7 +10,7 @@
 
         <h1> {{listing.name}} </h1>
         <p>
-            Rating: {{listing.likes}}
+            Rating: {{listing.likes}}* * * * *
         </p>
         <p>
             Author: {% if listing.author|length%} {%for a in listing.get_author() %}
@@ -65,7 +65,7 @@
             <form>
                 <img src="{{ url_for( 'static', filename='images/The Conquest of Bread.png' ) }} ">
                 <textarea placeholder='Write a Review!'></textarea>
-                <button> SUBMIT </button>
+                <button> SUBMIT </button> * * * * *
             </form>
         </div>
         <hr>

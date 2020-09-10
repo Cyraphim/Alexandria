@@ -153,6 +153,13 @@ def login():
     else:
         return render_template("login.html")
 
+@app.route('/test')
+def test():
+    return render_template("test.html")
+    
+@app.route('/')
+def search():
+    return render_template("search.html")
 
 if __name__ == "__main__":
     db.create_all()
