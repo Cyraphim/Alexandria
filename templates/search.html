@@ -1,13 +1,24 @@
-{%extends 'base.html'%} {%block head%}
-<title>Alexandria</title>
-{%endblock%} {%block body%}
-<div class="wrapper">
-    <input type="text" class="input" placeholder="What are you looking for?">
-    <div class="searchbtn"><i class="fas fa-search"></i></div>
-</div>
-<div class="middle">
-    <button href="/login">Sign In</button>
-    <button href="/register">Sign Up</button>
-</div>{%endblock%}
+<head>
+    <link rel="stylesheet" type="text/css" href="bootstrap.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"> {%block head%} {%endblock%}
+    <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+</head>
+
+<body>
+    <div class="top-middle">
+        <img src="{{url_for( 'static', filename='images/RC_White_Text.png' )}} " style="width:500px; padding:10px;">
+    </div>
+    <div class="wrapper">
+        <form>
+            <input type="text" class="input" placeholder="What are you looking for?">
+            <button class="searchbtn"><i class="fa fa-search "></i></button>
+        </form>
+    </div>
+    <div class="bottom-middle">
+        <a href="/login"><button>Sign In</button></a>
+        <a href="/register"><button>Sign Up</button></a>
+    </div>
+</body>
 
 </html>

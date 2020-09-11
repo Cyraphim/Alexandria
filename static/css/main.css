@@ -54,21 +54,23 @@ body {
     text-align: left;
     display: flex;
     flex-direction: row;
-    margin: 20px;
+    margin: 20px 0px;
 }
 
 .topnav input {
     flex-grow: 2;
-    color: var(--accent-color);
-    width: 500px;
-    height: 35px;
+    width: 300px;
+    max-width: 500px;
+    min-width: 100px;
+    height: 45px;
+    border: none;
+    border-radius: 10px;
+    margin: 2.5px 10px 0px 0px;
 }
 
 .topnav form button {
-    width: 100px;
+    width: 50px;
     background: var(--accent-color);
-    color: var(--primary-color);
-    border-radius: 0px;
     transform: translateY(-10px);
 }
 
@@ -77,8 +79,9 @@ button {
     width: 100px;
     background: var(--accent-color);
     color: white;
-    border-radius: 10px;
-    min-height: 30px;
+    border: none;
+    border-radius: 5px;
+    min-height: 50px;
     margin: 40px 0px 0px 0px;
     font-family: bahnschrift;
 }
@@ -254,35 +257,31 @@ form img {
     display: none;
 }
 
-@import url('https://fonts.googleapis.com/css?family=Comfortaa');
 .wrapper {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.5);
     max-width: 550px;
     width: 100%;
+    height: 75px;
     padding: 15px;
-    display: flex;
-    justify-content: space-between;
     border-radius: 5px;
 }
 
 .wrapper .input {
-    width: 85%;
+    left: 100%;
     padding: 15px 20px;
     border: none;
     border-radius: 5px;
-    font-weight: bold;
+    width: 440px;
 }
 
 .searchbtn {
-    background: #ffec00;
-    width: 10%;
     border-radius: 5px;
-    position: relative;
     cursor: pointer;
+    height: 50px;
 }
 
 .searchbtn .fas {
@@ -293,9 +292,16 @@ form img {
     font-size: 18px;
 }
 
-.middle {
+.bottom-middle {
     position: absolute;
     top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.top-middle {
+    position: absolute;
+    top: 20%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
