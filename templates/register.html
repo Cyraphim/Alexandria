@@ -1,34 +1,33 @@
 {%extends 'base.html'%} {%block head%}
 <title>Alexandria</title>
 {%endblock%} {%block body%}
+<br>
+<section class="center-content">
+    <form action="/register" method="POST">
+        <br>
 
-<body>
-    <section class="center-content">
-        <form action="/register" method="POST">
-            <br>
+        <div align="center" style="font-size: 25px;">
+            <h1>REGISTER</h1>
+        </div>
 
-            <div align="center" style="font-size: 25px;">
-                <h1>REGISTER</h1>
-            </div>
+        <div class="input-container">
+            <i class="fa fa-user icon"> </i>
+            <input class="input-field" name="username" type="text" id="username" placeholder="Username">
+        </div>
+        <div class="input-container">
+            <i class="fa fa-envelope icon"> </i>
+            <input class="input-field" name="email" type="text" id="email" placeholder="Email">
+        </div>
+        <div class="input-container">
+            <i class="fa fa-key icon"> </i>
+            <input class="input-field" name="password" type="password" id="password" placeholder="password">
+        </div>
 
-            <div class="input-container">
-                <i class="fa fa-user icon"> </i>
-                <input class="input-field" name="username" type="text" id="username" placeholder="Username">
-            </div>
-            <div class="input-container">
-                <i class="fa fa-envelope icon"> </i>
-                <input class="input-field" name="email" type="text" id="email" placeholder="Email">
-            </div>
-            <div class="input-container">
-                <i class="fa fa-key icon"> </i>
-                <input class="input-field" name="password" type="password" id="password" placeholder="password">
-            </div>
-
-            <button type="submit" class="btn"> Register</button>
-            <div align="center">
-                Already a member? <br>
-                <a href="/login"> Login here </a>
-            </div>
-        </form>
-    </section>
-    {%endblock%}
+        <button type="submit" class="btn"> Register</button>
+        <div align="center">
+            Already a member? <br>
+            <a href="/login"> Login here </a>
+        </div>
+    </form>
+</section>
+{%endblock%}

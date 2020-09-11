@@ -10,13 +10,15 @@
 
         <h1> {{listing.name}} </h1>
         <p>
-            Rating: {{listing.likes}}* * * * *
+            Rating: * * * * * ({{listing.likes}})
         </p>
         <p>
-            Author: {% if listing.author|length%} {%for a in listing.get_author() %}
+            Author: {% if listing.get_author_count() > 0%} {%for a in listing.get_author() %}
             <a href="/information/{{a.id}} "> 
                             [{{a.name}}] 
-                        </a> {%endfor%} {%else%} <i>UNKNOWN</i> {%endif%}
+                        </a> {%endfor%}{%else%}
+            <b>[UNKNOWN]
+                <b>{%endif%}
         </p>
         <p>Date Published: {{listing.date}} </p>
         <p>{{listing.summary}} </p>
@@ -35,7 +37,7 @@
         </ul>
     </section>
 
-    {%endif%} {% if listing.related|length%}
+    {%endif%} {% if listing.get_related_count() > 0%}
     <section>
         <h1>RELATED</h1>
         <div class="main-carousel "> {%for b in listing.get_related() %}
@@ -65,21 +67,20 @@
             <form>
                 <img src="{{ url_for( 'static', filename='images/The Conquest of Bread.png' ) }} ">
                 <textarea placeholder='Write a Review!'></textarea>
-                <button> SUBMIT </button> * * * * *
+                <button> SUBMIT </button>
             </form>
         </div>
         <hr>
+        {% if listing.get_comment_count() > 0%} {%for c in listing.get_comments() %}
         <div class="card ">
-            <img src="{{ url_for( 'static', filename='images/The Conquest of Bread.png' ) }} ">
-            <h1>DaSerialGenius</h1>
-            <comment> This book is good, I promise, please buy it, JK Rowling is not a transphobe I promise she didnt pay me!</comment>
+            <a href="/user/c.username">
+                <img src="{{ url_for( 'static', filename='images/The Conquest of Bread.png' ) }} ">
+                <h1>DaSerialGenius</h1>
+            </a>
+            <comment> {{c.comment}}</comment>
         </div>
-
-        <div class="card ">
-            <img src="{{ url_for( 'static', filename='images/The Conquest of Bread.png' ) }} ">
-            <h1>DaSerialGenius</h1>
-            <comment> This book is good, I promise, please buy it, JK Rowling is not a transphobe I promise she didnt pay me!</comment>
-        </div>
+        {% endfor %}
+        {%endif%}
     </section>
 </div>
 

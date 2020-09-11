@@ -1,21 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Search Box Design</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
-</head>
-{%extends 'base.html'%} {%block body%}
+{%extends 'base.html'%} {%block head%}
+<title>Alexandria</title>
+{%endblock%} {%block body%}
 <div class="wrapper">
     <input type="text" class="input" placeholder="What are you looking for?">
     <div class="searchbtn"><i class="fas fa-search"></i></div>
 </div>
 <div class="middle">
-    <a href="" class="btn btn1">Sign In</a>
-    <a href="" class="btn btn2">Sign Up</a>
-</div>
-{%endblock%}
+    <button href="/login">Sign In</button>
+    <button href="/register">Sign Up</button>
+</div>{%endblock%}
 
 </html>
