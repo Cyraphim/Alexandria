@@ -62,11 +62,16 @@
     <section>
         <h1>Write a review!</h1>
         <div class="comment-input">
+            
             <form>
+                {{user}}
                 <img src="{{ url_for( 'static', filename='images/The Conquest of Bread.png' ) }} ">
                 <textarea placeholder='Write a Review!'></textarea>
+                
                 <button> SUBMIT </button> * * * * *
+                
             </form>
+            
         </div>
         <hr>
         <div class="card ">

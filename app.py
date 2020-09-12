@@ -1,14 +1,14 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect,session
+from flask import Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.orm import relationship
-
 import os
 from sqlalchemy.sql.schema import ForeignKey
 
 
-
 app = Flask(__name__)
+app.secret_key = 'Hello'
 
 IMAGE_FOLDER = os.path.join('static', 'images')
 app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
@@ -18,9 +18,11 @@ db = SQLAlchemy(app)
 
 
 class reg(db.Model):
+    
     email = db.Column(db.String(200),nullable=False)
     username = db.Column(db.String(100), unique=True,primary_key=True)
     password = db.Column(db.String(100), nullable=False)
+    
     #comments = relationship("Comment")
     #comments = relationship("Comment", back_populates="regs")
 
@@ -33,6 +35,7 @@ def convert_to_int(value):
 
 
 class Comment(db.Model):
+
     _tablename_ = 'comment'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(200), ForeignKey("reg.username"),nullable=False)
@@ -87,10 +90,25 @@ class Listing(db.Model):
 
 
 @app.route('/information/<int:id>', methods=['POST', 'GET'])
+
 def index(id):
+    
     l = Listing.query.get(id)
     c = Comment.query.get(id)
-    return render_template("information.html", listing=l)
+    user = None
+    if "username" in session:
+        user = session['username']
+        
+        
+    return render_template("information.html", listing=l,user = user)
+    
+        
+#    def main_route():
+#     if current_user.is_authenticated:
+#          return render_template("information.html")
+#     else:
+#          return render_template("login.html")
+
 
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -99,6 +117,7 @@ def about():
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
+        user = reg.query.filter_by(email=email).first() 
         new_username = reg(username=username, email=email, password=password)
 
         try:
@@ -144,23 +163,22 @@ def login():
         new_username = request.form['username']
         new_password = request.form['password']
 
-        user = bool(reg.query.filter_by(
+        user =  (reg.query.filter_by(
             username=new_username, password=new_password).first())
-        if user == True:
-            return redirect('/information')
-        else:
-            return "user id and password is incorrect"
+        session["username"] = user.username
+
+        return redirect("/information/1")
     else:
         return render_template("login.html")
-
 @app.route('/test')
 def test():
     return render_template("test.html")
     
 @app.route('/')
+
 def search():
     return render_template("search.html")
 
 if __name__ == "__main__":
-    db.create_all()
+    
     app.run(debug=True)
