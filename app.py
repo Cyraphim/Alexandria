@@ -26,7 +26,7 @@ class Users(db.Model):
 
 class Listing(db.Model):
     _tablename_ = "Listing"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True) 
     name = db.Column(db.String(200), nullable=False, unique=True)
     summary = db.Column(db.String(256), nullable=True)
     likes = db.Column(db.Integer, nullable=False, default=0)
