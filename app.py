@@ -5,17 +5,24 @@ from datetime import datetime
 from sqlalchemy.orm import relationship
 import os
 from sqlalchemy.sql.schema import ForeignKey
+from flask_msearch import Search
 
 
 app = Flask(__name__)
 app.secret_key = 'Hello'
 
+#search = Search()
+#search.init_app(app)
+
 IMAGE_FOLDER = os.path.join('static', 'images')
+
 app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 # db.create_all()
+
+
 
 class Users(db.Model):
     _tablename_ = "Users"
@@ -26,6 +33,7 @@ class Users(db.Model):
 
 class Listing(db.Model):
     _tablename_ = "Listing"
+   
     id = db.Column(db.Integer, primary_key=True, autoincrement=True) 
     name = db.Column(db.String(200), nullable=False, unique=True)
     summary = db.Column(db.String(256), nullable=True)
@@ -33,6 +41,7 @@ class Listing(db.Model):
     date_published = db.Column(db.DateTime, default=datetime.now)
     is_author = db.Column(db.Integer, nullable=False)    
     comments = db.relationship('Comment', backref='listing', lazy='dynamic')
+    __searchable__ = ['name']
 
     def get_author_count(self):
         return  db.session.query(Listing.id).distinct().filter(Listing.is_author==True).count()
@@ -152,9 +161,26 @@ def test():
     session.pop('username', None)
     return redirect("/information/1")
     
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def search():
-    return render_template("search.html")
+    if request.method == 'POST':
+        name = request.form["SearchItem"]
+        search = "%{}%".format(name)
+        
+        posts = Listing.query.filter(Listing.name.like(search)).all()
+        if (posts != None):
+            str = " "
+            for i in posts:
+                str += i.name
+
+            
+
+            return " Books " + str
+
+            
+            
+    return render_template('search.html')
+   # return render_template("search.html",posts = posts)
 
 if __name__ == "__main__":
     db.create_all()

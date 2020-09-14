@@ -9,9 +9,10 @@
     <div class="top-middle">
         <img src="{{url_for( 'static', filename='images/RC_White_Text.png' )}} " style="width:750px; padding:10px;">
     </div>
-    <div class="wrapper">
-        <form>
-            <input type="text" class="input" placeholder="What are you looking for?">
+    <div class="wrapper" value="Search">
+        
+        <form method="POST" >
+            <input type="text" class="input" name="SearchItem" placeholder="What are you looking for? ">
             <button class="searchbtn"><i class="fa fa-search "></i></button>
         </form>
     </div>
