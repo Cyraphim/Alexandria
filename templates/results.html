@@ -1,0 +1,41 @@
+{%extends 'base.html'%} {%block head%}
+<title>Alexandria</title>
+{%endblock%} {%block body%}
+
+<div style="margin:20px auto; max-width: 1000px;">
+    <section>
+        {% for i in res%}
+        <div class="result">
+            <a href="/information/{{i.id}}">
+                <div class="resultimage">
+                    <img src=" {{ url_for( 'static', filename='images/' + i.name + '.png' ) }} " style="object-fit: cover;width:133.33px; height: 200px; ">
+                </div>
+                <h1> {{i.name}}</h1>
+            </a>
+            <p>
+                Rating:
+                <span class="fa fa-star checked "></span>
+                <span class="fa fa-star checked "></span>
+                <span class="fa fa-star checked "></span>
+                <span class="fa fa-star "></span>
+                <span class="fa fa-star "></span> (0)
+            </p>
+            <p>
+                Author: {% if i.get_author_count() > 0%} {%for a in i.get_author() %}
+                <a href="/information/{{a.id}} "> 
+                            [{{a.name}}] 
+                        </a> {%endfor%}{%else%}
+                <b>[UNKNOWN]
+                <b>{%endif%}
+        </p>
+
+        <p>Date Published: {{i.date}}</p>
+        <br>
+        <br>
+        <br><br>
+        <hr>
+    </div>
+    {%endfor%}
+</section>
+</div>
+{%endblock%}

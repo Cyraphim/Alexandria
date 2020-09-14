@@ -111,6 +111,15 @@ section .bookimage {
     border-radius: 10px;
 }
 
+section .resultimage {
+    float: left;
+}
+
+.resultimage img {
+    border-radius: 5px;
+    margin: 10px;
+}
+
 .features {
     color: var(--accent-color);
 }

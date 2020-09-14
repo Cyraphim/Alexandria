@@ -155,6 +155,17 @@ def test():
 @app.route('/')
 def search():
     return render_template("search.html")
+    
+@app.route('/results')
+def results():  
+    book = Listing(name="The Conquest of Bread", summary="Fluffy boi", is_author=False)
+    book1 = Listing(name="Antifa The Antifascist Handbook", summary="How to get access to George Soros' bank account",  is_author=False)
+    book2 = Listing(name="Das Kapital", summary="The more lesbians in a videogame the more Marxist it is", is_author=False)
+   
+
+    results = [book1, book2]
+
+    return render_template("results.html", res=results, new_username="daserialgenius", logged_user=None)
 
 if __name__ == "__main__":
     db.create_all()
