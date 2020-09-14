@@ -163,24 +163,25 @@ def test():
     
 @app.route('/', methods=['POST', 'GET'])
 def search():
-    if request.method == 'POST':
-        name = request.form["SearchItem"]
-        search = "%{}%".format(name)
+    return render_template("search.html")
+    
+@app.route('/results')
+def results():  
+    
+    name = request.form["SearchItem"]
+    search = "%{}%".format(name)
         
-        posts = Listing.query.filter(Listing.name.like(search)).all()
-        if (posts != None):
-            str = " "
-            for i in posts:
-                str += i.name
+    posts = Listing.query.filter(Listing.name.like(search)).all()
+    if (posts != None):
+        str = " "
+        for i in posts:
+            str += i.name
 
             
 
-            return " Books " + str
+        return " Books " + str
 
-            
-            
-    return render_template('search.html')
-   # return render_template("search.html",posts = posts)
+    return render_template("results.html", res=posts, new_username="daserialgenius", logged_user=None)
 
 if __name__ == "__main__":
     db.create_all()
