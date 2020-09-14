@@ -55,18 +55,17 @@ class Listing(db.Model):
         return toRet
 
     def get_comment_count(self):
-        return  0
+        return  db.session.query(Comment.id).filter_by(listing_id = self.id).count()
 
     def get_comments(self):
         toRet = []
-        for comm in db.session.query().filter(Comment.listing_id == self.id):
-            c = Listing.query.get(comm.id)
+        for comm in db.session.query(Comment.id).filter_by(listing_id = self.id):
+            c = Comment.query.get(comm.id)
             toRet.append(c)
         return toRet
 
     def __repr__(self):
         return '<Listing %r>' % self.id
-
 
 class Comment(db.Model):
     _tablename_ = "Comment"
@@ -76,27 +75,24 @@ class Comment(db.Model):
     listing_id = db.Column(db.Integer,db.ForeignKey(Listing.id))
 
 @app.route('/information/<int:id>', methods=['POST', 'GET'])
-
-def index(id):
+def information(id):  
+    if request.method == "POST":
+        review = request.form['review']
+        user = session['username'] 
+        c = Comment(comment=review, username=user, listing_id=id)
+        db.session.add(c)
+        db.session.commit()
+        return redirect(request.url)
+    else:
+        l = Listing.query.get(id)
+        user = None
+        logged_user = None
+        if "username" in session:
+            user = session['username']   
+        if user != None:
+            logged_user = Users.query.get(user)      
+        return render_template("information.html", listing=l, logged_user=logged_user)
     
-    l = Listing.query.get(id)
-    c = Comment.query.get(id)
-    user = None
-    if "username" in session:
-        user = session['username']
-        
-        
-    return render_template("information.html", listing=l,user = user)
-    
-        
-#    def main_route():
-#     if current_user.is_authenticated:
-#          return render_template("information.html")
-#     else:
-#          return render_template("login.html")
-
-
-
 @app.route('/register', methods=['POST', 'GET'])
 def about():
     if request.method == 'POST':
@@ -111,12 +107,11 @@ def about():
             db.session.commit()
             return redirect('/login')
         except:
-            u = Users.query().get(1)
             return 'The actual username and password was : ' + u.username + " | " + u.password
 
     else:
         new_username = Users.query.order_by(Users.username).first()
-        return render_template('register.html', new_username=new_username)
+        return render_template('register.html', new_username=new_username, logged_user=None)
 
 
 @app.route('/home')
@@ -125,18 +120,14 @@ def home():
     book1 = Listing(name="Antifa The Antifascist Handbook", summary="How to get access to George Soros' bank account",  is_author=False)
     book2 = Listing(name="Das Kapital", summary="The more lesbians in a videogame the more Marxist it is", is_author=False)
     kropotkin = Listing(name="Peter Kropotkin", summary="Leftist Santa", is_author=True)
-    u = Users(email="DaSerialGenius@gmail.com", username="DaSerialGenius",password="12345")
-    c = Comment(username="daserialgenius", comment="das ist gluten tag", listing_id=1)
 
     try:
         db.session.add(book)
         db.session.add(book1)
         db.session.add(book2)
         db.session.add(kropotkin)
-        db.session.add(c)
-        db.session.add(u)
         db.session.commit()
-        return redirect("register")
+        return redirect("/register")
     except:
         return "SOMETHING WENT WRONG, PLEASE TRY AGAIN"
 
@@ -153,16 +144,18 @@ def login():
 
         return redirect("/information/1")
     else:
-        return render_template("login.html")
-@app.route('/test')
+        return render_template("login.html", logged_user=None)
+
+@app.route('/logout')
 def test():
-    return render_template("test.html")
+    session['username'] = None
+    session.pop('username', None)
+    return redirect("/information/1")
     
 @app.route('/')
-
 def search():
     return render_template("search.html")
 
 if __name__ == "__main__":
-    
+    db.create_all()
     app.run(debug=True)

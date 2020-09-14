@@ -10,7 +10,12 @@
 
         <h1> {{listing.name}} </h1>
         <p>
-            Rating: * * * * * ({{listing.likes}})
+            Rating:
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star"></span>
+            <span class="fa fa-star"></span> ({{listing.likes}})
         </p>
         <p>
             Author: {% if listing.get_author_count() > 0%} {%for a in listing.get_author() %}
@@ -37,7 +42,37 @@
         </ul>
     </section>
 
-    {%endif%} {% if listing.get_related_count() > 0%}
+    {%endif%} 
+    <section>
+        <h1>REVIEWS</h1>
+        {%if logged_user != None%}
+        <div class="comment-input">     
+            <form method="POST">
+                <textarea placeholder='Write a Review!' name="review"></textarea>
+                <button> SUBMIT</i></button>
+                <input type="radio" name="likes" class="select-button" style="
+                background-color: green;"> <i class="fa fa-thumbs-up"  ></i></input>
+                <input type="radio" name="likes"class="select-button" style="
+                background-color: red;"> <i class="fa fa-thumbs-down"  ></i></input>
+                <br>
+            </form>  
+        </div>
+        <hr>
+        {%endif%}
+        <br>
+        Review Count : {{listing.get_comment_count()}}
+        {% if listing.get_comment_count() > 0%} {%for c in listing.get_comments() %}
+        <div class="card ">
+                <img src="{{ url_for( 'static', filename='images/The Conquest of Bread.png' ) }} ">
+                <h1>{{c.username}}</h1>
+            <comment> {{c.comment}}</comment>
+        </div>
+        {% endfor %}
+        {%else%}
+        <h2>There are currently no reviews for this listing! Why not write one!</h2>
+        {%endif%}
+    </section>
+    {% if listing.get_related_count() > 0%}
     <section>
         <h1>RELATED</h1>
         <div class="main-carousel "> {%for b in listing.get_related() %}
@@ -61,35 +96,11 @@
         </script>
     </section>
     {%endif%}
-    <section>
-        <h1>Write a review!</h1>
-        <div class="comment-input">
-            
-            <form>
-                {{user}}
-                <img src="{{ url_for( 'static', filename='images/The Conquest of Bread.png' ) }} ">
-                <textarea placeholder='Write a Review!'></textarea>
-                <button> SUBMIT </button>
-            </form>
-            
-        </div>
-        <hr>
-        {% if listing.get_comment_count() > 0%} {%for c in listing.get_comments() %}
-        <div class="card ">
-            <a href="/user/c.username">
-                <img src="{{ url_for( 'static', filename='images/The Conquest of Bread.png' ) }} ">
-                <h1>DaSerialGenius</h1>
-            </a>
-            <comment> {{c.comment}}</comment>
-        </div>
-        {% endfor %}
-        {%endif%}
-    </section>
+    
 </div>
 
-
-<script src='plugin.js'></script>
-<footer>
+<footer align=center>
+    <br>
     <h2 size=40px>
         &#169; READER'S CONCLAVE - 2020
     </h2>
