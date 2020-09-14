@@ -163,23 +163,16 @@ def test():
     
 @app.route('/', methods=['POST', 'GET'])
 def search():
-    return render_template("search.html")
+    return render_template("home.html")
     
-@app.route('/results')
+@app.route('/results', methods=['POST', 'GET'])
 def results():  
     
     name = request.form["SearchItem"]
     search = "%{}%".format(name)
         
     posts = Listing.query.filter(Listing.name.like(search)).all()
-    if (posts != None):
-        str = " "
-        for i in posts:
-            str += i.name
-
-            
-
-        return " Books " + str
+    
 
     return render_template("results.html", res=posts, new_username="daserialgenius", logged_user=None)
 
