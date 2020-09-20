@@ -1,117 +1,22 @@
-<!DOCTYPE html>
-<html>
+{%extends 'base.html'%} {%block head%}
+<title>Alexandria</title>
 
-<head>
-    <title> Profile management</title>
-    <link rel="stylesheet" type="text/css" href="prof.css">
-</head>
+<meta Http-Equiv="Cache-Control" Content="no-store"> {%endblock%} {%block body%}
+<div style="margin:20px auto; max-width: 1000px;">
+    <section class="profile">
 
-<body>
-    <header>
-        <nav>
-            <ul>
-                <li><u><a href="bookbody.html">Bookbody</a> </u></li>
-                <li><u><a href="login.html">Login</a></u></li>
-                <li><u><a href="contact.html">Contact</a></u></li>
-            </ul>
-        </nav>
-        <caption>
-            <h1>
-                <center> LOGO AND STUFF</center>
-            </h1>
-        </caption>
-    </header>
-    <HR>
-    <center>
-        <div class="box">
-            <img src="harry.jpg"></image>
-            <input type="file" name=" " id="file" accept="image/*">
-            <label for="file">EDIT PIC</label>
-            <input type="text" name="" placeholder="Change your username">
-            <input type="email" name="" placeholder="Change your Emai-ID">
-            <input type="text" name="" placeholder="Date of birth">
-            <input type="text" name="" placeholder="Write something about yourself">
-
-            <button style="float: right;margin:10px 18.2% 0 0;">DONE</button>
-        </div>
-
+        <form method="POST" enctype="multipart/form-data" style="float:right">
+            <img src=" {{ url_for( 'static', filename='images/user_images/' + logged_user.username + '.png' ) }} " style="object-fit: cover;width:300px; height: 300px; border-radius: 100%; ">
+            <br>
+            <p>
+                <input type="file" name="image" onchange="this.form.submit()">
+            </p>
+        </form> <br>
+        <br> Username:
+        <h1>{{logged_user.username}}</h1>
+        <br> Email:
+        <h1> {{logged_user.email}}</h1>
         <br>
-
-
-
-        <div class=" quest">
-
-            <h2>Answer the following to have a better experience!!</h2>
-            <h3>What are your favorite genres?</h3>
-
-
-            <h4>Check your favorite boxes</h2>
-                <label>
-      <input class="et" type="checkbox"><span>Horror</span>
-    </label>
-                <br>
-                <br>
-                <label>
-      <input class="lt" type="checkbox"><span>arts</span>
-    </label>
-                <br>
-                <br>
-                <label>
-      <input class="ro" type="checkbox"><span>romance</span>
-    </label>
-                <br>
-                <br>
-                <label>
-      <input class="de" type="checkbox"><span>fiction</span>
-    </label>
-                <br>
-                <br>
-                <label>
-      <input class="fr" type="checkbox"><span>Non-fiction</span>
-    </label>
-                <br>
-                <br>
-                <label>
-        <input class="et" type="checkbox"><span>Science fiction</span>
-      </label>
-                <br>
-                <br>
-                <label>
-        <input class="lt" type="checkbox"><span>Fantasy</span>
-      </label>
-                <br>
-                <br>
-                <label>
-        <input class="ro" type="checkbox"><span>Educational</span>
-      </label>
-                <br><br>
-                <label>
-        <input class="de" type="checkbox"><span>Devotional</span>
-      </label>
-                <br><br>
-                <label>
-        <input class="fr" type="checkbox"><span>Music</span>
-      </label>
-
-
-
-                <h3>What are your preferable languages to read in?</h3>
-                <input type="text" name="" placeholder="type here">
-                <h3>Name some of your favorite authors? </h3>
-                <input type="text" name="" placeholder="type here">
-                <h3>Do you like e-books?</h3>
-                <input type="text" name="" placeholder="type here">
-        </div>
-    </center>
-
-    <HR>
-
-    <footer>
-        <p>
-            <center>FOOOOOOOOOOOOOOOOO Footer footer fotter footer foooterrrr TERRRRRRRRRRRRRRRRRRRRR</center>
-        </p>
-    </footer>
-
-</body>
-
-</html>
+        <br>
+    </section>
+</div> {%endblock%}

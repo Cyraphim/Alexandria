@@ -4,39 +4,37 @@
 
 <div style="margin:20px auto; max-width: 1000px;">
     <section>
-        <h1> We found {{res|length}} result(s):</h1>
+        <h1> We found {{res|length}} result(s) for "{{query}}":</h1>
         {% for i in res%}
         <div class="result">
             <a href="/information/{{i.id}}">
                 <div class="resultimage">
-                    <img src=" {{ url_for( 'static', filename='images/' + i.name + '.png' ) }} " style="object-fit: cover;width:133.33px; height: 200px; ">
+                    <img src=" {{ url_for( 'static', filename='images/Books/' + i.name + '.png' ) }} " style="object-fit: cover;width:133.33px; height: 200px; ">
                 </div>
                 <h1> {{i.name}}</h1>
             </a>
             <p>
-                Rating:
-                <span class="fa fa-star checked "></span>
-                <span class="fa fa-star checked "></span>
-                <span class="fa fa-star checked "></span>
-                <span class="fa fa-star "></span>
-                <span class="fa fa-star "></span> (0)
+                Rating: {%for i in range(i.get_ratings())%}
+                <span class="fa fa-star checked "></span> {%endfor%} {%for i in range(5 - i.get_ratings())%}
+                <span class="fa fa-star "></span> {%endfor%} ({{i.get_ratings()}})
             </p>
             <p>
-                Author: {% if i.get_author_count() > 0%} {%for a in i.get_author() %}
-                <a href="/information/{{a.id}} "> 
-                            [{{a.name}}] 
-                        </a> {%endfor%}{%else%}
-                <b>[UNKNOWN]
-                <b>{%endif%}
-        </p>
+                Author: [{{i.author}}]
+            </p>
 
-        <p>Date Published: {{i.date}}</p>
-        <br>
-        <br>
-        <br><br>
-        <hr>
-    </div>
-    {%endfor%}
-</section>
+            <p>Date Published: {{i.date_published}}</p>
+            <br>
+            <br>
+            <br><br>
+            <hr>
+        </div>
+        {%endfor%}
+    </section>
 </div>
-{%endblock%}
+
+<footer align=center>
+    <br>
+    <h2 size=40px>
+        &#169; READER'S CONCLAVE - 2020
+    </h2>
+</footer> {%endblock%}

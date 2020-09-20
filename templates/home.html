@@ -1,31 +1,22 @@
 {%extends 'base.html'%} {%block head%}
 <title>Alexandria</title>
 {%endblock%} {%block body%}
-
 <div style="margin:20px auto; max-width: 1000px;">
     {%for b in listing.get_recommendations().keys() %}
     <section>
-        <h1>RELATED</h1>
+        <h1>{{b}}</h1>
         <div class="main-carousel"> {%for c in listing.get_recommendations()[b]%}
             <div class="features ">
                 <figure>
-                    <a href="/information/{{b.id}} ">
-                        <img src="{{ url_for( 'static', filename='images/' + c.name + '.png' ) }} " alt="{{c.alttext}} ">
+                    <a href="/information/{{c.id}} ">
+                        <img src="{{ url_for( 'static', filename='images/Books/' + c.name + '.png' ) }} " alt="{{c.alttext}} ">
                     </a>
                 </figure>
             </div>
             {% endfor %}
         </div>
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js ">
-        </script>
-        <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js ">
-        </script>
-        <script>
-            $(".main-carousel ").flickity({
-                pageDots: false
-            });
-        </script>
     </section>
+
     {%endfor%}
 </div>
 {%endblock%}

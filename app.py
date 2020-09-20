@@ -6,11 +6,13 @@ from sqlalchemy.orm import relationship
 import os
 import re
 from sqlalchemy.sql.schema import ForeignKey
+from werkzeug.utils import secure_filename
 
 from selenium import webdriver
 import time
 from selenium.webdriver.common.keys import Keys
 import re
+import shutil
 
 email_regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 # for custom mails use: '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$' 
@@ -27,17 +29,34 @@ IMAGE_FOLDER = os.path.join('static', 'images')
 app.config['IMAGE_FOLDER'] = IMAGE_FOLDER
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
 app.config['SQLALCHEMY_ECHO'] = True
+
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+@app.after_request
+def add_header(r):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    r.headers['Cache-Control'] = 'public, max-age=0'
+    return r
+
 db = SQLAlchemy(app)
 # db.create_all()
 
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
+def allowed_file(filename):
+	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 class Users(db.Model):
     _tablename_ = "Users"
     email = db.Column(db.String(200),nullable=False)
     username = db.Column(db.String(50), unique=True,primary_key=True)
     password = db.Column(db.String(100), nullable=False)
-    userimage = db.Column(db.String(200), nullable=False, default="default.png")
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
 
 class Listing(db.Model):
@@ -47,6 +66,7 @@ class Listing(db.Model):
     name = db.Column(db.String(200), nullable=False, unique=True)
     summary = db.Column(db.String(256), nullable=True)
     likes = db.Column(db.Integer, nullable=False, default=0)
+    dislikes = db.Column(db.Integer, nullable=False, default=0)
     date_published = db.Column(db.String(20))
     author = db.Column(db.String(256), nullable=True)
     is_author = db.Column(db.Integer, nullable=False)    
@@ -54,10 +74,17 @@ class Listing(db.Model):
     __searchable__ = ['name']
     tag= db.Column(db.String(256), nullable=False, default="temp")
     external_link=db.Column(db.String(256), nullable=False, default="")
+
+    def get_ratings(self):
+        try:
+            return int((self.likes / (self.likes + self.dislikes)) * 5)
+        except:
+            return 0
+
     def get_author_count(self):
         return  db.session.query(Listing.id).distinct().filter(Listing.is_author==True).count()
 
-    def get_author(self):
+    def get_author_id(self):
         toRet=[]
         for book in db.session.query(Listing.id).distinct().filter(Listing.is_author==True):
             b = Listing.query.get(book.id)
@@ -83,17 +110,18 @@ class Listing(db.Model):
             c = Comment.query.get(comm.id)
             toRet.append(c)
         return toRet
-
     
     def get_recommendations():
         toRet={}
         for book in db.session.query(Listing.tag).distinct().filter(Listing.is_author==False):
-            if book not in toRet:
-                bs = db.session.query(Listing.id).distinct().filter(Listing.is_author==False)
-                l = []
-                for i in bs:
-                    l.append(Listing.query.get(i.id))
-                toRet[book] = l
+            book =re.sub(r'[^A-Za-z0-9 ]+', '', book[0])
+            if len(book) > 0:
+                if book not in toRet:
+                    bs = db.session.query(Listing.id).distinct().filter(Listing.tag == book)
+                    l = []
+                    for i in bs:
+                        l.append(Listing.query.get(i.id))
+                    toRet[book] = l
         return toRet
 
     def __repr__(self):
@@ -105,24 +133,60 @@ class Comment(db.Model):
     comment = db.Column(db.String(200), nullable=False)
     username = db.Column(db.String(50), db.ForeignKey(Users.username))
     listing_id = db.Column(db.Integer,db.ForeignKey(Listing.id))
+    liked = db.Column(db.Integer, nullable=False, default=1)
+    def get_user(self):
+        toRet = Users.query.get(self.username)
+        return toRet
+        
 
 @app.route('/information/<int:id>', methods=['POST', 'GET'])
 def information(id):  
+    user = None
+    logged_user = None
+    if "username" in session:
+        user = session['username']   
+    if user != None:
+        logged_user = Users.query.get(user)   
+    review_error=""
+
     if request.method == "POST":
         review = request.form['review']
         user = session['username'] 
-        c = Comment(comment=review, username=user, listing_id=id)
+        likes = request.form.getlist('likes')
+
+        l = Listing.query.get(id)
+        
+        review_error=""
+        error_check = False
+
+        if len(likes) <= 0:
+            review_error="Please tell us whether you recommend it or not before submitting!"
+            error_check = True
+
+        if len(review) <= 0:
+            review_error="Please tell us your thoughts in the review box before submitting!"
+            error_check = True
+        
+        if user == None or l == None:
+            return redirect("/logout")
+
+        if error_check:
+            return render_template("information.html", listing=l, logged_user=logged_user,  review_error=review_error)
+
+
+        if likes == "liked":
+            l.likes +=1
+            liked = 1
+        else:
+            l.dislikes +=1
+            liked = 0
+
+        c = Comment(comment=review, username=user, listing_id=id, liked=liked)
         db.session.add(c)
         db.session.commit()
         return redirect(request.url)
     else:
         l = Listing.query.get(id)
-        user = None
-        logged_user = None
-        if "username" in session:
-            user = session['username']   
-        if user != None:
-            logged_user = Users.query.get(user)      
         return render_template("information.html", listing=l, logged_user=logged_user)
     
 @app.route('/register', methods=['POST', 'GET'])
@@ -151,9 +215,13 @@ def about():
         if not (re.search(email_regex, email)):  
             return render_template('register.html', logged_user=None, error_message="Invalid Email")
 
-        try:
+
+        shutil.copy("static/images/user_images/default.png", "static/images/user_images/" + username + ".png")
+            
+        try:            
             db.session.add(new_username)
             db.session.commit()
+            session["username"] = new_username.username
             return redirect('/login')
         except:
             return render_template('register.html', logged_user=logged_user, error_message="Something went wrong, please try again!")
@@ -219,11 +287,10 @@ def results():
             logged_user=Users.query.get(user)
 
     name = request.form["SearchItem"]
-    search = "%{}%".format(name)
-        
+    search = "%{}%".format(name)  
     posts = Listing.query.filter(Listing.name.like(search)).all()
     
-    return render_template("results.html", res=posts, logged_user=logged_user)
+    return render_template("results.html", res=posts, query=name,logged_user=logged_user)
 
 @app.route('/user', methods=['POST', 'GET'])
 def userpage():  
@@ -233,20 +300,26 @@ def userpage():
         user = session["username"]
         if user != None:
             logged_user=Users.query.get(user)
+            if logged_user != None:
+                    email_error = ""
+                    user_error = ""
+                    if request.method == "POST":
+                        file = request.files['image']
+                        if file and allowed_file(file.filename):
+                            filename = secure_filename(file.filename)
+                            file.save(os.path.join(app.config['IMAGE_FOLDER'] + "/user_images/", logged_user.username + ".png"))
+                                        
+                    return render_template("Profile.html", logged_user=logged_user)
 
-    name = request.form["SearchItem"]
-    search = "%{}%".format(name)
-    posts = Listing.query.filter(Listing.name.like(search)).all()
-    
-    return render_template("results.html", res=posts, logged_user=logged_user)
-
+    return redirect("/")
+        
 @app.route('/fill')
-def fill():    
+def fill():
+    if app.debug:
         driver = webdriver.Chrome()
         books = open("books.txt", "r")
-
-
         for name in books.readlines():
+            try:
                 driver.get("http://google.com")
                 inputElement = driver.find_element_by_name("q")
                 inputElement.send_keys(name + " site:librarything.com\n")
@@ -259,10 +332,10 @@ def fill():
                 largest = 0
                 tags = ""
                 for i in tag_des:
-                        t = int(re.findall(r'\d+', i.value_of_css_property("font-size"))[0])
-                        if t > largest:
-                                tags = i.text
-                                largest = t
+                    t = int(re.findall(r'\d+', i.value_of_css_property("font-size"))[0])
+                    if t > largest:
+                        tags = i.text
+                        largest = t
 
                 title = re.findall(r"(?P<name>[A-Za-z\t' -:.]+)", title_des)
                 date = driver.find_element_by_xpath('//td[@fieldname="originalpublicationdate"]').text
@@ -275,25 +348,26 @@ def fill():
                 inputElement.send_keys(name + " site:amazon.in\n")
                 driver.find_element_by_tag_name("cite").click()
                 link = driver.current_url
-  
+
                 l = Listing(name = title[0], summary = description, date_published = date, author = title[1][3: len(title[1])], is_author=False, tag=tags, external_link = link)
 
                 db.session.add(l)
+                db.session.commit()
 
 
                 print(link)
                 print(title[0])
-                print(title[1][3: len(title[1])])
+                print(title[1][3:len(title[1])])
                 print(date)
                 print(tags)
                 print(description)
-        
-
+            except:
+                print("unable to add" + name)
+            
         books.close()
         driver.close()
-        db.session.commit()
 
-        return redirect('/')
+    return redirect('/')
 
 
 if __name__ == "__main__":
