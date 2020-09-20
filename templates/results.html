@@ -4,6 +4,7 @@
 
 <div style="margin:20px auto; max-width: 1000px;">
     <section>
+        <h1> We found {{res|length}} result(s):</h1>
         {% for i in res%}
         <div class="result">
             <a href="/information/{{i.id}}">

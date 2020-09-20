@@ -1,25 +1,31 @@
-<head>
-    <link rel="stylesheet" type="text/css" href="bootstrap.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"> {%block head%} {%endblock%}
-    <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
-</head>
+{%extends 'base.html'%} {%block head%}
+<title>Alexandria</title>
+{%endblock%} {%block body%}
 
-<body>
-    <div class="top-middle">
-        <img src="{{url_for( 'static', filename='images/RC_White_Text.png' )}} " style="width:750px; padding:10px;">
-    </div>
-    <div class="wrapper" value="Search">
-        
-        <form method="POST" action="/results" >
-            <input type="text" class="input" name="SearchItem" placeholder="What are you looking for? ">
-            <button class="searchbtn"><i class="fa fa-search "></i></button>
-        </form>
-    </div>
-    <div class="bottom-middle">
-        <a href="/login"><button>Sign In</button></a>
-        <a href="/register"><button>Sign Up</button></a>
-    </div>
-</body>
-
-</html>
+<div style="margin:20px auto; max-width: 1000px;">
+    {%for b in listing.get_recommendations().keys() %}
+    <section>
+        <h1>RELATED</h1>
+        <div class="main-carousel"> {%for c in listing.get_recommendations()[b]%}
+            <div class="features ">
+                <figure>
+                    <a href="/information/{{b.id}} ">
+                        <img src="{{ url_for( 'static', filename='images/' + c.name + '.png' ) }} " alt="{{c.alttext}} ">
+                    </a>
+                </figure>
+            </div>
+            {% endfor %}
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js ">
+        </script>
+        <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js ">
+        </script>
+        <script>
+            $(".main-carousel ").flickity({
+                pageDots: false
+            });
+        </script>
+    </section>
+    {%endfor%}
+</div>
+{%endblock%}
