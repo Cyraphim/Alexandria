@@ -8,6 +8,7 @@ import re
 from sqlalchemy.sql.schema import ForeignKey
 from werkzeug.utils import secure_filename
 
+import random
 from selenium import webdriver
 import time
 from selenium.webdriver.common.keys import Keys
@@ -31,6 +32,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
 app.config['SQLALCHEMY_ECHO'] = True
 
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
 
 @app.after_request
 def add_header(r):
@@ -60,10 +62,9 @@ class Users(db.Model):
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
 
 class Listing(db.Model):
-    _tablename_ = "Listing"
-   
+    _tablename_ = "Listing" 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True) 
-    name = db.Column(db.String(200), nullable=False, unique=True)
+    name = db.Column(db.String(200), nullable=False)
     summary = db.Column(db.String(256), nullable=True)
     likes = db.Column(db.Integer, nullable=False, default=0)
     dislikes = db.Column(db.Integer, nullable=False, default=0)
@@ -96,8 +97,9 @@ class Listing(db.Model):
 
     def get_related(self):
         toRet=[]
-        for book in db.session.query(Listing.id).distinct().filter(Listing.is_author==False):
-            b = Listing.query.get(book.id)
+        for i in range(5):
+            rand = random.randrange(0, db.session.query(Listing).count()) 
+            b = Listing.query.get(rand)
             toRet.append(b)
         return toRet
 
@@ -113,16 +115,35 @@ class Listing(db.Model):
     
     def get_recommendations():
         toRet={}
-        for book in db.session.query(Listing.tag).distinct().filter(Listing.is_author==False):
-            book =re.sub(r'[^A-Za-z0-9 ]+', '', book[0])
-            if len(book) > 0:
-                if book not in toRet:
-                    bs = db.session.query(Listing.id).distinct().filter(Listing.tag == book)
+        count = 0
+
+        to_check =db.session.query(Listing.tag).distinct()
+
+        while True:
+            rand = random.randrange(0, to_check.count())            
+            m_tag = re.sub(r'[^A-Za-z0-9 ]+', '', to_check[rand][0])   
+            if len(m_tag) > 0:
+                bs = db.session.query(Listing).distinct(Listing.tag).filter(Listing.tag == m_tag)
+                if bs.count() >= 5:
                     l = []
-                    for i in bs:
-                        l.append(Listing.query.get(i.id))
-                    toRet[book] = l
-        return toRet
+                    for j in bs:
+                        l.append(Listing.query.get(j.id))
+                    toRet[m_tag] = l
+                    count += 1
+            if count >= 5:
+                break
+
+        x = sorted(toRet.keys(), key=lambda k: len(toRet[k]), reverse=True)
+        
+        print( "==========================================================================================")
+        print(x)
+
+        tr = {}
+
+        for i in x:
+            tr[i] = toRet[i]
+
+        return tr
 
     def __repr__(self):
         return '<Listing %r>' % self.id
@@ -174,7 +195,7 @@ def information(id):
             return render_template("information.html", listing=l, logged_user=logged_user,  review_error=review_error)
 
 
-        if likes == "liked":
+        if likes[0] == "liked":
             l.likes +=1
             liked = 1
         else:
@@ -239,7 +260,8 @@ def home():
         if user != None:
             logged_user=Users.query.get(user)
             if logged_user != None:
-                return render_template('home.html', logged_user=logged_user, listing=Listing)
+                l = Listing.get_recommendations()
+                return render_template('home.html', logged_user=logged_user, listing=l)
     return redirect('/search')
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -312,58 +334,103 @@ def userpage():
                     return render_template("Profile.html", logged_user=logged_user)
 
     return redirect("/")
-        
+       
 @app.route('/fill')
 def fill():
     if app.debug:
-        driver = webdriver.Chrome()
+        book_count = 0
+        db.session.flush()
         books = open("books.txt", "r")
+        driver = webdriver.Chrome()
+        all_books=[]
         for name in books.readlines():
             try:
-                driver.get("http://google.com")
+                print("\n\n\nadding: " + name)
+                attempt = 0
+                driver.get("http://duckduckgo.com")
                 inputElement = driver.find_element_by_name("q")
                 inputElement.send_keys(name + " site:librarything.com\n")
-                driver.find_element_by_tag_name("cite").click()
+                print("click")
+                results = driver.find_elements_by_xpath("//div[@id='links']/div/div/h2/a[@class='result__a']")
+                lenbook = len(results[0].get_attribute("href").split('/'))
+                book_link = results[0].get_attribute("href").rsplit("/", lenbook - 5)[0]
+                driver.get(book_link)
+                while attempt < 2:
+                    try:
+                        print("grabbing the description")
+                        description = driver.find_element_by_class_name("wslsummary").text
+                        print("grabbing the title and author")
+                        title_des = driver.find_element_by_class_name("headsummary").text
+                        print("grabbing the tags")
+                        tag_des = driver.find_elements_by_xpath('//span[@class="tag"]')
+                        print("is the problem here?")
+                        largest = 0
+                        tags = ""
+                        for i in tag_des:
+                            t = int(re.findall(r'\d+', i.value_of_css_property("font-size"))[0])
+                            if t > largest:
+                                tags = i.text
+                                largest = t
 
-                description = driver.find_elements_by_class_name("wslsummary")[0].text
-                title_des = driver.find_elements_by_class_name("headsummary")[0].text
-                tag_des = driver.find_elements_by_class_name("tag")
-
-                largest = 0
-                tags = ""
-                for i in tag_des:
-                    t = int(re.findall(r'\d+', i.value_of_css_property("font-size"))[0])
-                    if t > largest:
-                        tags = i.text
-                        largest = t
-
-                title = re.findall(r"(?P<name>[A-Za-z\t' -:.]+)", title_des)
-                date = driver.find_element_by_xpath('//td[@fieldname="originalpublicationdate"]').text
-                
-                with open('static/images/Books/' + title[0] + '.png', "wb") as file:
-                        file.write(driver.find_element_by_xpath('//div[@id="maincover"]/img').screenshot_as_png)
-
-                driver.get("http://google.com")
+                        title = re.findall(r"(?P<name>[A-Za-z\t' -:.]+)", title_des)
+                        print("grabbing the date")
+                        date = driver.find_element_by_xpath('//td[@fieldname="originalpublicationdate"]').text
+                        print("saving an image")
+                        with open('static/images/Books/' + title[0] + '.png', "wb") as file:
+                                file.write(driver.find_element_by_xpath('//div[@id="maincover"]/img').screenshot_as_png)       
+                        attempt = 99                  
+                    except:
+                        print("Something went wrong trying again | attempt #" + str(attempt))
+                        attempt += 1
+                        
+                print("getting the external link")
+                driver.get("http://duckduckgo.com")
                 inputElement = driver.find_element_by_name("q")
-                inputElement.send_keys(name + " site:amazon.in\n")
-                driver.find_element_by_tag_name("cite").click()
-                link = driver.current_url
+                inputElement.send_keys(title[0] + " site:amazon.in\n")
+                
+                attempt = 0
+                while attempt < 2:
+                    try:
+                        results = driver.find_elements_by_xpath("//div[@id='links']/div/div/h2/a[@class='result__a']")
+                        link = results[0].get_attribute("href")
+                        attempt = 99
+                    except:
+                        print("Something went wrong with the link somehow")
+                        attempt += 1
 
+                print("creating the book")
                 l = Listing(name = title[0], summary = description, date_published = date, author = title[1][3: len(title[1])], is_author=False, tag=tags, external_link = link)
 
-                db.session.add(l)
-                db.session.commit()
 
+                flag = False
 
-                print(link)
-                print(title[0])
-                print(title[1][3:len(title[1])])
-                print(date)
-                print(tags)
-                print(description)
+                for i in all_books:
+                    if i.name == l.name:
+                        flag = True
+
+                if flag == False:
+                    all_books.append(l)
+                else:
+                    print("book was already in the list, ignoring...")
+                
+                print("adding the book")
+
             except:
-                print("unable to add" + name)
-            
+                print("Couldnt get all the data required, moving on")       
+
+            book_count += 1
+            if book_count >= 50:
+                book_count = 0
+                db.session.add_all(all_books)
+                db.session.commit()
+                all_books.clear()
+
+        if book_count != 0:
+            db.session.add_all(all_books)
+            db.session.commit()
+
+        print("\n\n\nadded all the books yayyyy!\n\n\n")
+
         books.close()
         driver.close()
 
@@ -372,4 +439,4 @@ def fill():
 
 if __name__ == "__main__":
     db.create_all()
-    app.run(debug=True)
+    app.run(debug=False)

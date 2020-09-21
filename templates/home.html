@@ -2,10 +2,10 @@
 <title>Alexandria</title>
 {%endblock%} {%block body%}
 <div style="margin:20px auto; max-width: 1000px;">
-    {%for b in listing.get_recommendations().keys() %}
+    {%for category in listing %}
     <section>
-        <h1>{{b}}</h1>
-        <div class="main-carousel"> {%for c in listing.get_recommendations()[b]%}
+        <h1>{{category}}</h1>
+        <div class="main-carousel"> {%for c in listing[category]%}
             <div class="features ">
                 <figure>
                     <a href="/information/{{c.id}} ">
