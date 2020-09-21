@@ -336,9 +336,10 @@ form img {
 }
 
 footer {
+    position: absolute;
     bottom: 0;
-    height: 100px;
-    padding: auto;
+    width: 100%;
+    color: #fff;
     text-align: center;
     background: linear-gradient(45deg, rgba(20, 20, 20, 1) 00%, var(--primary-color) 75%);
 }
@@ -408,4 +409,60 @@ input[class="super-sad"]:hover+svg,
 input[class="super-sad"]:checked+svg,
 input[class="super-sad"]:focus+svg {
     fill: rgb(239, 42, 16);
+}
+
+.social-media {
+    display: flex;
+    justify-content: center;
+}
+
+.social-media a {
+    display: flex;
+    background: var(--accent-color);
+    height: 75px;
+    width: 75px;
+    margin: 0 15px;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 6px 6px 10px -1px rgba(0, 0, 0, 0.15), -6px -6px 10px -1px rgba(0, 0, 0, 1);
+    border: 1px solid rgba(0, 0, 0, 0);
+    transition: transform 0.5s;
+}
+
+.social-media a i {
+    font-size: 35px;
+    color: var(--primary-color);
+    transition: transform 0.5s;
+}
+
+.social-media a:hover {
+    box-shadow: 4px 4px 6px -1px rgba(0, 0, 0, 0.2), inset-4px -4px 6px -1px rgba(0, 0, 0, 0.7), -0.5px -0.5px 0px rgba(0, 0, 0, 1), -0.5px 0.5px 0px rgba(0, 0, 0, 0.15), 0px 12px 10px -10px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transform: translateY(2px);
+}
+
+.social-media a:hover i {
+    transform: scale(0.90);
+}
+
+a:hover .fa-facebook {
+    color: #3b5998;
+}
+
+a:hover .fa-whatsapp {
+    color: #4fce5d;
+}
+
+a:hover .fa-twitter {
+    color: #00acee;
+}
+
+a:hover .fa-instagram {
+    color: #f14843;
+}
+
+a:hover .fa-youtube {
+    color: #f00;
 }

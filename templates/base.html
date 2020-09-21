@@ -24,10 +24,10 @@
         </div>
         <div class="topnav-right ">
             {% if logged_user == None%}
-            <a href="/login " class="active"><button>Login</button></a>
-            <a href="/register " class="active"> <button>Register</button></a>
+            <a href="/login " class="active"><button>Sign In</button></a>
+            <a href="/register " class="active"> <button>Sign Up</button></a>
             {%else%}
-            <a href="/logout " class="active"> <button>Logout</button></a>
+            <a href="/logout " class="active"> <button>Sign Out</button></a>
 
             <a href="/user " class="active"> <img src=" {{ url_for( 'static', filename='images/user_images/' + logged_user.username + '.png' ) }} " style="width:50px; height:50px; transform: translateY(30px); border-radius:100%">
             </a> {%endif%}
@@ -39,6 +39,15 @@
     <br>
     <br>
     <br>{%block body%} {%endblock%}
+
+    <footer align=center class="footer">
+        <br>
+        <a href="/contact">
+            <h2 size=40px>
+                &#169; READER'S CONCLAVE - 2020
+            </h2>
+        </a>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js ">
     </script>

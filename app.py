@@ -299,6 +299,16 @@ def logout():
 def search():
     return render_template("search.html")
     
+@app.route('/contact')
+def social():
+    user=None
+    logged_user=None
+    if "username" in session:
+        user = session["username"]
+        if user != None:
+            logged_user=Users.query.get(user)
+    return render_template("social.html", logged_user=logged_user)
+    
 @app.route('/results', methods=['POST', 'GET'])
 def results():  
     user=None
