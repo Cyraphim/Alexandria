@@ -6,9 +6,7 @@ from sqlalchemy.orm import relationship
 import os
 import re
 from sqlalchemy.sql.schema import ForeignKey
-from werkzeug.utils import secure_filename
-from flask_bcrypt import Bcrypt
-import random
+from werkzeug.utils import secure_filenameimport random
 from selenium import webdriver
 import time
 from selenium.webdriver.common.keys import Keys
@@ -21,7 +19,7 @@ email_regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
 app = Flask(__name__)
 app.secret_key = 'Hello'
-bcrypt = Bcrypt(app)
+
 #search = Search()
 # search.init_app(app)
 
@@ -232,14 +230,13 @@ def about():
         username = request.form['username'].lower()
         email = request.form['email'].lower()
         password = request.form['password']
-        pw_hash = bcrypt.generate_password_hash(password).decode('utf-8')
-        bcrypt.check_password_hash(pw_hash)
+        
         user_check = (Users.query.filter_by(
             username=username).first())
         if user_check != None:
             return render_template('register.html', logged_user=None, error_message="User with that username already exists")
 
-        new_username = Users(username=username, email=email, password=pw_hash)
+        new_username = Users(username=username, email=email, password=password)
 
         if not (re.search(email_regex, email)):
             return render_template('register.html', logged_user=None, error_message="Invalid Email")
