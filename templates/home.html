@@ -1,8 +1,8 @@
 {%extends 'base.html'%} {%block head%}
 <title>Alexandria</title>
-{%endblock%} {%block body%}
+{%endblock%} {%block body%} {%for category in listing %}
+
 <div style="margin:20px auto; max-width: 1000px;">
-    {%for category in listing %}
     <section>
         <h1>{{category}}</h1>
         <div class="main-carousel"> {%for c in listing[category]%}
@@ -16,7 +16,5 @@
             {% endfor %}
         </div>
     </section>
-
-    {%endfor%}
 </div>
-{%endblock%}
+{%endfor%} {%endblock%}
