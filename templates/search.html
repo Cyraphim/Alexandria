@@ -1,8 +1,10 @@
 <head>
     <link rel="stylesheet" type="text/css" href="bootstrap.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"> {%block head%} {%endblock%}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}">
     <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+    <link rel="icon" href="{{url_for( 'static', filename='images/R_Favicon.png' )}} " type="image/png" sizes="32x32">
+    <title>Reader's Conclave</title>
 </head>
 
 <body>
@@ -10,8 +12,8 @@
         <img src="{{url_for( 'static', filename='images/RC_White_Text.png' )}} " style="width:750px; padding:10px;">
     </div>
     <div class="wrapper" value="Search">
-        
-        <form method="POST" action="/results" >
+
+        <form method="POST" action="/results">
             <input type="text" class="input" name="SearchItem" placeholder="What are you looking for? ">
             <button class="searchbtn"><i class="fa fa-search "></i></button>
         </form>
