@@ -6,7 +6,8 @@ from sqlalchemy.orm import relationship
 import os
 import re
 from sqlalchemy.sql.schema import ForeignKey
-from werkzeug.utils import secure_filenameimport random
+from werkzeug.utils import secure_filename
+import random
 from selenium import webdriver
 import time
 from selenium.webdriver.common.keys import Keys
