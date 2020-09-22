@@ -7,7 +7,7 @@ import os
 import re
 from sqlalchemy.sql.schema import ForeignKey
 from werkzeug.utils import secure_filename
-
+from flask_bcrypt import Bcrypt
 import random
 from selenium import webdriver
 import time
@@ -21,7 +21,7 @@ email_regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
 app = Flask(__name__)
 app.secret_key = 'Hello'
-
+bcrypt = Bcrypt(app)
 #search = Search()
 #search.init_app(app)
 
@@ -225,13 +225,14 @@ def about():
         username = request.form['username'].lower()
         email = request.form['email'].lower()
         password = request.form['password']
-
+        pw_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+        bcrypt.check_password_hash(pw_hash)
         user_check =  (Users.query.filter_by(
             username=username).first())
         if user_check != None:
             return render_template('register.html', logged_user=None, error_message="User with that username already exists")
 
-        new_username = Users(username=username, email=email, password=password)
+        new_username = Users(username=username, email=email, password=pw_hash)
 
         if not (re.search(email_regex, email)):  
             return render_template('register.html', logged_user=None, error_message="Invalid Email")
@@ -269,7 +270,7 @@ def login():
     if request.method == 'POST':
         new_username = request.form['username'].lower()
         new_password = request.form['password']
-
+        
         user =  (Users.query.filter_by(
             username=new_username, password=new_password).first())
         if user != None:
