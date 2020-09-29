@@ -1,18 +1,13 @@
 from flask import Flask, render_template, url_for, request, redirect, session
-from flask import Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import and_, or_, not_
-from datetime import datetime
 from sqlalchemy.orm import relationship
 import os
 import re
 from sqlalchemy.sql.schema import ForeignKey
-from werkzeug.utils import secure_filename
 import random
 from selenium import webdriver
-import time
 from selenium.webdriver.common.keys import Keys
-import re
 import shutil
 import smtplib 
 
@@ -510,4 +505,4 @@ def fill():
 
 if __name__ == "__main__":
     db.create_all()
-    app.run(debug=True)
+    app.run(debug=False)
