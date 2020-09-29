@@ -422,7 +422,7 @@ input[class="super-sad"]:focus+svg {
     display: flex;
     background: var(--accent-color);
     height: 75px;
-    width: 150px;
+    width: 200px;
     margin: 0 15px;
     border-radius: 8px;
     align-items: center;

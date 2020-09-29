@@ -8,6 +8,9 @@
 
         <h1> {{listing.name}} </h1>
         <p>
+            Genre: [{{listing.tag}}]
+        </p>
+        <p>
             Rating: {%for i in range(listing.get_ratings())%}
             <span class="fa fa-star checked "></span> {%endfor%} {%for i in range(5 - listing.get_ratings())%}
             <span class="fa fa-star "></span> {%endfor%} ({{listing.get_ratings()}})

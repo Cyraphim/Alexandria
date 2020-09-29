@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect, session
 from flask import Blueprint
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import and_, or_, not_
 from datetime import datetime
 from sqlalchemy.orm import relationship
 import os
@@ -13,6 +14,7 @@ import time
 from selenium.webdriver.common.keys import Keys
 import re
 import shutil
+import smtplib 
 
 email_regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 # for custom mails use: '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
@@ -58,8 +60,9 @@ def allowed_file(filename):
 
 class Users(db.Model):
     _tablename_ = "Users"
+    id_hash = db.Column(db.Integer, unique=True)
     email = db.Column(db.String(200), nullable=False)
-    username = db.Column(db.String(50), unique=True, primary_key=True)
+    username = db.Column(db.String(50), primary_key=True)
     password = db.Column(db.String(100), nullable=False)
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
 
@@ -99,11 +102,9 @@ class Listing(db.Model):
         return db.session.query(Listing.id).distinct().filter(Listing.is_author == False).count()
 
     def get_related(self):
-        toRet = []
-        for i in range(5):
-            rand = random.randrange(0, db.session.query(Listing).count())
-            b = Listing.query.get(rand)
-            toRet.append(b)
+        tr = db.session.query(Listing).distinct().filter(Listing.tag == self.tag)
+        x = random.randint(5, 10)
+        toRet = random.sample(tr[0:x], x)
         return toRet
 
     def get_comment_count(self):
@@ -118,36 +119,18 @@ class Listing(db.Model):
 
     def get_recommendations():
         toRet = {}
+
+        query = db.session.query(Listing.tag.distinct().label("tag"))
+        tags = [row.tag for row in query.all()]
+        rx = random.randint(2, len(tags))
+        tags = random.sample(tags[0:rx], rx)
         count = 0
 
-        to_check = db.session.query(Listing.tag).distinct()
-
-        while True:
-            rand = random.randrange(0, to_check.count())
-            m_tag = re.sub(r'[^A-Za-z0-9 ]+', '', to_check[rand][0])
-            if len(m_tag) > 0:
-                bs = db.session.query(Listing).distinct(
-                    Listing.tag).filter(Listing.tag == m_tag)
-                if bs.count() >= 5:
-                    l = []
-                    for j in bs:
-                        l.append(Listing.query.get(j.id))
-                    toRet[m_tag] = l
-                    count += 1
-            if count >= 5:
-                break
-
-        x = sorted(toRet.keys(), key=lambda k: len(toRet[k]), reverse=True)
-
-        print("==========================================================================================")
-        print(x)
-
-        tr = {}
-
-        for i in x:
-            tr[i] = toRet[i]
-
-        return tr
+        for t in tags:
+            tr = db.session.query(Listing).distinct().filter(Listing.tag == t)
+            x = random.randint(5, 10)
+            toRet[t] = random.sample(tr[0:x], x)
+        return toRet
 
     def __repr__(self):
         return '<Listing %r>' % self.id
@@ -331,9 +314,10 @@ def results():
 
     name = request.form["SearchItem"]
     search = "%{}%".format(name)
-    posts = Listing.query.filter(Listing.name.like(search)).all()
 
-    return render_template("results.html", res=posts, query=name, logged_user=logged_user)
+    posts = Listing.query.filter(or_(Listing.name.like(search), Listing.author.like(search), Listing.tag.like(search))).all()
+    newlist = sorted(posts, key=lambda x: x.likes, reverse=True)
+    return render_template("results.html", res=newlist, query=name, logged_user=logged_user)
 
 
 @app.route('/user', methods=['POST', 'GET'])
@@ -342,6 +326,7 @@ def userpage():
     logged_user = None
     if "username" in session:
         user = session["username"]
+        print(user)
         if user != None:
             logged_user = Users.query.get(user)
             if logged_user != None:
@@ -358,16 +343,76 @@ def userpage():
 
     return redirect("/")
 
+@app.route('/requestchange', methods=['POST', 'GET'])
+def change_password():
+    error_message=""
+    if request.method == 'POST':
+        username = request.form['username'].lower()
+        email = request.form['email']   
+        user = Users.query.get(username)
+        if user.email == email:
+            otp = random.randint(00000, 99999)
+
+            while(True):
+                if db.session.query(Users.id_hash).distinct().filter(Users.id_hash == otp).first() == None:
+                    break
+                else:
+                    otp = random.randint(00000, 99999)
+
+            user.id_hash = otp
+            s = smtplib.SMTP('smtp.gmail.com', 587)   
+
+            s.starttls()   
+            s.login("tanuj.corporate@gmail.com", "Sonicneo1") 
+            
+            message = """From: Reader's Conclave <tanuj.corporate@gmail.com>
+
+                        This is an e-mail to allow you to change your password
+                        If you didnt request this, please ignore
+
+                        http://www.readerconclave.pythonanywhere.com/applychange/""" + str(otp)
+
+            s.sendmail("tanuj.corporate@gmail.com", user.email, message) 
+            # terminating the session 
+            s.quit()
+            db.session.commit()
+            error_message="Link has been sent to the entered email"
+        else:
+            return render_template("ChangeRequest.html", error_message = "Invalid email/username", logged_user=None)
+    return render_template("ChangeRequest.html", logged_user=None, error_message=error_message)
+
+@app.route('/applychange/<otp>', methods=['POST', 'GET'])
+def apply_password(otp):
+    if request.method == 'POST':
+        password = request.form['new_password']
+        user_x = db.session.query(Users).distinct().filter(Users.id_hash == int(otp)).first()
+        user = Users.query.get(user_x.username)
+        user.password = password
+        otp = random.randint(00000, 99999)
+        while(True):
+            if Users.query.get(otp) == None:
+                break
+            else:
+                otp = random.randint(00000, 99999)
+        user.id_hash = otp
+        db.session.commit()
+        return redirect("/")
+    return render_template("ChangeApply.html", logged_user=None)
+
 
 @app.route('/fill')
 def fill():
     if app.debug:
         book_count = 0
         db.session.flush()
-        books = open("books.txt", "r")
+        books = open("books.txt", "r", encoding="utf8")
         driver = webdriver.Chrome()
         all_books = []
         for name in books.readlines():
+            if name[0] == '#':
+                tags = name[2:len(name)]
+                continue
+                
             try:
                 print("\n\n\nadding: " + name)
                 attempt = 0
@@ -380,80 +425,71 @@ def fill():
                 lenbook = len(results[0].get_attribute("href").split('/'))
                 book_link = results[0].get_attribute(
                     "href").rsplit("/", lenbook - 5)[0]
-                driver.get(book_link)
-                while attempt < 2:
-                    try:
-                        print("grabbing the description")
-                        description = driver.find_element_by_class_name(
-                            "wslsummary").text
-                        print("grabbing the title and author")
-                        title_des = driver.find_element_by_class_name(
-                            "headsummary").text
-                        print("grabbing the tags")
-                        tag_des = driver.find_elements_by_xpath(
-                            '//span[@class="tag"]')
-                        print("is the problem here?")
-                        largest = 0
-                        tags = ""
-                        for i in tag_des:
-                            t = int(re.findall(
-                                r'\d+', i.value_of_css_property("font-size"))[0])
-                            if t > largest:
-                                tags = i.text
-                                largest = t
+                if "work" in book_link:
+                    driver.get(book_link)
 
-                        title = re.findall(
-                            r"(?P<name>[A-Za-z\t' -:.]+)", title_des)
-                        print("grabbing the date")
-                        date = driver.find_element_by_xpath(
-                            '//td[@fieldname="originalpublicationdate"]').text
-                        print("saving an image")
-                        with open('static/images/Books/' + title[0] + '.png', "wb") as file:
-                            file.write(driver.find_element_by_xpath(
-                                '//div[@id="maincover"]/img').screenshot_as_png)
-                        attempt = 99
-                    except:
-                        print(
-                            "Something went wrong trying again | attempt #" + str(attempt))
-                        attempt += 1
+                    while attempt < 2:
+                        try:
+                            print("grabbing the description")
+                            description = driver.find_element_by_class_name(
+                                "wslsummary").text
+                            print("grabbing the title and author")
+                            title_des = driver.find_element_by_class_name(
+                                "headsummary").text
+                            print("grabbing the tags")
 
-                print("getting the external link")
-                driver.get("http://duckduckgo.com")
-                inputElement = driver.find_element_by_name("q")
-                inputElement.send_keys(title[0] + " site:amazon.in\n")
+                            title = re.findall(
+                                r"(?P<name>[A-Za-z\t' -:.]+)", title_des)
+                            print("grabbing the date")
+                            date = driver.find_element_by_xpath(
+                                '//td[@fieldname="originalpublicationdate"]').text
+                            print("saving an image")
+                            with open('static/images/Books/' + title[0] + '.png', "wb") as file:
+                                file.write(driver.find_element_by_xpath(
+                                    '//div[@id="maincover"]/img').screenshot_as_png)
+                            attempt = 99
+                        except:
+                            print(
+                                "Something went wrong trying again | attempt #" + str(attempt))
+                            attempt += 1
 
-                attempt = 0
-                while attempt < 2:
-                    try:
-                        results = driver.find_elements_by_xpath(
-                            "//div[@id='links']/div/div/h2/a[@class='result__a']")
-                        link = results[0].get_attribute("href")
-                        attempt = 99
-                    except:
-                        print("Something went wrong with the link somehow")
-                        attempt += 1
+                    print("getting the external link")
+                    driver.get("http://duckduckgo.com")
+                    inputElement = driver.find_element_by_name("q")
+                    inputElement.send_keys(title[0] + " site:amazon.in\n")
 
-                print("creating the book")
-                l = Listing(name=title[0], summary=description, date_published=date, author=title[1][3: len(
-                    title[1])], is_author=False, tag=tags, external_link=link)
+                    attempt = 0
+                    while attempt < 2:
+                        try:
+                            results = driver.find_elements_by_xpath(
+                                "//div[@id='links']/div/div/h2/a[@class='result__a']")
+                            link = results[0].get_attribute("href")
+                            attempt = 99
+                        except:
+                            print("Something went wrong with the link somehow")
+                            attempt += 1
 
-                flag = False
+                        print("creating the book")
+                        l = Listing(name=title[0], summary=description, date_published=date, author=title[1][3: len(
+                            title[1])], is_author=False, tag=tags, external_link=link)
 
-                for i in all_books:
-                    if i.name == l.name:
-                        flag = True
+                        flag = False
 
-                if flag == False:
-                    all_books.append(l)
-                else:
-                    print("book was already in the list, ignoring...")
+                        for i in all_books:
+                            if i.name == l.name:
+                                flag = True
 
-                print("adding the book")
+                        if flag == False:
+                            all_books.append(l)
+                            book_count += 1
+                        else:
+                            print("book was already in the list, ignoring...")
+
+                        print("adding the book")
 
             except:
                 print("Couldnt get all the data required, moving on")
 
-            book_count += 1
             if book_count >= 50:
                 book_count = 0
                 db.session.add_all(all_books)
