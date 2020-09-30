@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, request, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import and_, or_, not_
 from sqlalchemy.orm import relationship
+from flask_mail import Mail, Message
 import os
 import re
 from sqlalchemy.sql.schema import ForeignKey
@@ -17,6 +18,7 @@ email_regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
 app = Flask(__name__)
 app.secret_key = 'Hello'
+mail = Mail(app) 
 
 #search = Search()
 # search.init_app(app)
@@ -28,6 +30,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
 app.config['SQLALCHEMY_ECHO'] = True
 
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'noreply.readersconclave@gmail.com'
+app.config['MAIL_PASSWORD'] = 'Alexandria1'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app) 
 
 
 @app.after_request
@@ -261,7 +271,7 @@ def login():
             session["username"] = user.username
             return redirect("/")
         else:
-            return render_template("login.html", logged_user=None, error_message="Incorrect username/password")
+            return render_template("Login.html", logged_user=None, error_message="Incorrect username/password")
     else:
         user = None
         logged_user = None
@@ -272,7 +282,7 @@ def login():
                 if logged_user != None:
                     return redirect("/")
 
-        return render_template("login.html", logged_user=logged_user)
+        return render_template("Login.html", logged_user=logged_user)
 
 
 @app.route('/logout')
@@ -355,21 +365,10 @@ def change_password():
                     otp = random.randint(00000, 99999)
 
             user.id_hash = otp
-            s = smtplib.SMTP('smtp.gmail.com', 587)   
-
-            s.starttls()   
-            s.login("tanuj.corporate@gmail.com", "Sonicneo1") 
-            
-            message = """From: Reader's Conclave <tanuj.corporate@gmail.com>
-
-                        This is an e-mail to allow you to change your password
-                        If you didnt request this, please ignore
-
-                        http://www.readerconclave.pythonanywhere.com/applychange/""" + str(otp)
-
-            s.sendmail("tanuj.corporate@gmail.com", user.email, message) 
-            # terminating the session 
-            s.quit()
+            msg = Message("Hello", sender="readersconclave@gmail.com", recipients=[user.email])
+            url = "http://readersconclave.pythonanywhere.com/applychange/" + str(otp)
+            msg.html = "<h1>Readers Conclave Password Change</h1><br><a href=" + url + "><button> Click here to change your password!</button></a><br> or click the link below: <br>" + url 
+            mail.send(msg)
             db.session.commit()
             error_message="Link has been sent to the entered email"
         else:
@@ -505,4 +504,4 @@ def fill():
 
 if __name__ == "__main__":
     db.create_all()
-    app.run(debug=False)
+    app.run(debug=True)
