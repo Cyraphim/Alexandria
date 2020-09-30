@@ -254,8 +254,19 @@ def home():
         if user != None:
             logged_user = Users.query.get(user)
             if logged_user != None:
-                l = Listing.get_recommendations()
-                return render_template('home.html', logged_user=logged_user, listing=l)
+                
+                toRet = {}
+                query = db.session.query(Listing.tag.distinct().label("tag"))
+                tags = [row.tag for row in query.all()]
+                rx = random.randint(2, len(tags))
+                tags = random.sample(tags[0:rx], rx)
+                count = 0
+                for t in tags:
+                    tr = db.session.query(Listing).distinct().filter(Listing.tag == t)
+                    x = random.randint(5, 10)
+                    toRet[t] = random.sample(tr[0:x], x)
+
+                return render_template('home.html', logged_user=logged_user, listing=toRet)
     return redirect('/search')
 
 
@@ -504,4 +515,4 @@ def fill():
 
 if __name__ == "__main__":
     db.create_all()
-    app.run(debug=True)
+    app.run(debug=False)
